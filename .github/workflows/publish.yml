@@ -17,9 +17,9 @@ jobs:
 
             - run: npm ci
             - run: npm install -g gulp ovsx
-            - run: gulp 'vsix:release:package:platform-neutral'
+            - run: gulp 'vsix:release:package:platform-specific'
 
             - name: Get package version
               run: node -e "console.log('VERSION=' + require('./package.json').version)" >> $GITHUB_ENV
 
-            - run: ovsx publish ./csharp-${{ env.VERSION }}.vsix -p ${{ secrets.OPEN_VSX_TOKEN }}
+            - run: ovsx publish --packagePath $(find . -iname *.vsix) -p ${{ secrets.OPEN_VSX_TOKEN }}
