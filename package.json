@@ -403,7 +403,7 @@
     {
       "id": "Debugger",
       "description": ".NET Core Debugger (Windows / x64)",
-      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.0-974/netcoredbg-win64.zip",
+      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.3-992/netcoredbg-win64.zip",
       "installPath": ".debugger",
       "platforms": [
         "win32"
@@ -416,7 +416,7 @@
     {
       "id": "Debugger",
       "description": ".NET Core Debugger (macOS / x64)",
-      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.0-974/netcoredbg-osx-amd64.tar.gz",
+      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.3-992/netcoredbg-osx-amd64.tar.gz",
       "installPath": ".debugger",
       "platforms": [
         "darwin"
@@ -433,7 +433,7 @@
     {
       "id": "Debugger",
       "description": ".NET Core Debugger (linux / x64)",
-      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.0-974/netcoredbg-linux-amd64.tar.gz",
+      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.3-992/netcoredbg-linux-amd64.tar.gz",
       "installPath": ".debugger",
       "platforms": [
         "linux",
@@ -450,7 +450,7 @@
     {
       "id": "Debugger",
       "description": ".NET Core Debugger (linux / ARM64)",
-      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.0-974/netcoredbg-linux-arm64.tar.gz",
+      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.3-992/netcoredbg-linux-arm64.tar.gz",
       "installPath": ".debugger",
       "platforms": [
         "linux"
