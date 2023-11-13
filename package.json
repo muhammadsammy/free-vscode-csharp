@@ -483,6 +483,22 @@
     },
     {
       "id": "Debugger",
+      "description": ".NET Core Debugger (linux / ARM64)",
+      "url": "https://github.com/Samsung/netcoredbg/releases/download/3.0.0-1012/netcoredbg-linux-arm64.tar.gz",
+      "installPath": ".debugger",
+      "platforms": [
+        "linux"
+      ],
+      "architectures": [
+        "arm64"
+      ],
+      "binaries": [
+        "./netcoredbg"
+      ],
+      "installTestPath": ".debugger/netcoredbg/netcoredbg"
+    },
+    {
+      "id": "Debugger",
       "description": ".NET Core Debugger (linux / x64)",
       "url": "https://github.com/Samsung/netcoredbg/releases/download/3.0.0-1012/netcoredbg-linux-amd64.tar.gz",
       "installPath": ".debugger",
@@ -492,22 +508,6 @@
       ],
       "architectures": [
         "x86_64"
-      ],
-      "binaries": [
-        "./netcoredbg"
-      ],
-      "installTestPath": ".debugger/netcoredbg/netcoredbg"
-    },
-    {
-      "id": "Debugger",
-      "description": ".NET Core Debugger (linux / ARM64)",
-      "url": "https://github.com/Samsung/netcoredbg/releases/download/3.0.0-1012/netcoredbg-linux-arm64.tar.gz",
-      "installPath": ".debugger",
-      "platforms": [
-        "linux"
-      ],
-      "architectures": [
-        "arm64"
       ],
       "binaries": [
         "./netcoredbg"
@@ -1500,204 +1500,84 @@
                 "description": "For debug extension development only: if a port is specified VS Code tries to connect to a debug adapter running in server mode",
                 "default": 4711
               }
-            },
-            "justMyCode": {
-              "type": "boolean",
-              "description": "Optional flag to only show user code.",
-              "default": true
-            },
-            "requireExactSource": {
-              "type": "boolean",
-              "description": "Optional flag to require current source code to match the pdb.",
-              "default": true
-            },
-            "enableStepFiltering": {
-              "type": "boolean",
-              "description": "Optional flag to enable stepping over Properties and Operators.",
-              "default": true
-            },
-            "logging": {
-              "description": "Optional flags to determine what types of messages should be logged to the output window.",
-              "type": "object",
-              "required": [],
-              "default": {},
-              "properties": {
-                "exceptions": {
-                  "type": "boolean",
-                  "description": "Optional flag to determine whether exception messages should be logged to the output window.",
-                  "default": true
-                },
-                "moduleLoad": {
-                  "type": "boolean",
-                  "description": "Optional flag to determine whether module load events should be logged to the output window.",
-                  "default": true
-                },
-                "programOutput": {
-                  "type": "boolean",
-                  "description": "Optional flag to determine whether program output should be logged to the output window when not using an external console.",
-                  "default": true
-                },
-                "engineLogging": {
-                  "type": "boolean",
-                  "description": "Optional flag to determine whether diagnostic engine logs should be logged to the output window.",
-                  "default": false
-                },
-                "browserStdOut": {
-                  "type": "boolean",
-                  "description": "Optional flag to determine if stdout text from the launching the web browser should be logged to the output window.",
-                  "default": true
-                },
-                "elapsedTiming": {
-                  "type": "boolean",
-                  "description": "If true, engine logging will include `adapterElapsedTime` and `engineElapsedTime` properties to indicate the amount of time, in microseconds, that a request took.",
-                  "default": false
-                },
-                "threadExit": {
-                  "type": "boolean",
-                  "description": "Controls if a message is logged when a thread in the target process exits. Default: `false`.",
-                  "default": false
-                },
-                "processExit": {
-                  "type": "boolean",
-                  "description": "Controls if a message is logged when the target process exits, or debugging is stopped. Default: `true`.",
-                  "default": true
-                }
-              }
-            },
-            "suppressJITOptimizations": {
-              "type": "boolean",
-              "description": "If true, when an optimized module (.dll compiled in the Release configuration) loads in the target process, the debugger will ask the Just-In-Time compiler to generate code with optimizations disabled. For more information: https://aka.ms/VSCode-CS-LaunchJson#suppress-jit-optimizations",
-              "default": false
-            },
-            "symbolOptions": {
-              "description": "Options to control how symbols (.pdb files) are found and loaded.",
-              "default": {
-                "searchPaths": [],
-                "searchMicrosoftSymbolServer": false,
-                "searchNuGetOrgSymbolServer": false
-              },
-              "type": "object",
-              "properties": {
-                "searchPaths": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "Array of symbol server URLs (example: http​://MyExampleSymbolServer) or directories (example: /build/symbols) to search for .pdb files. These directories will be searched in addition to the default locations -- next to the module and the path where the pdb was originally dropped to.",
-                  "default": []
-                },
-                "searchMicrosoftSymbolServer": {
-                  "type": "boolean",
-                  "description": "If 'true' the Microsoft Symbol server (https​://msdl.microsoft.com​/download/symbols) is added to the symbols search path. If unspecified, this option defaults to 'false'.",
-                  "default": false
-                },
-                "searchNuGetOrgSymbolServer": {
-                  "type": "boolean",
-                  "description": "If 'true' the NuGet.org symbol server (https​://symbols.nuget.org​/download/symbols) is added to the symbols search path. If unspecified, this option defaults to 'false'.",
-                  "default": false
-                },
-                "cachePath": {
-                  "type": "string",
-                  "description": "Directory where symbols downloaded from symbol servers should be cached. If unspecified, on Windows the debugger will default to %TEMP%\\SymbolCache, and on Linux and macOS the debugger will default to ~/.dotnet/symbolcache.",
-                  "default": "~/.dotnet/symbolcache"
-                },
-                "moduleFilter": {
-                  "description": "Provides options to control which modules (.dll files) the debugger will attempt to load symbols (.pdb files) for.",
-                  "default": {
-                    "mode": "loadAllButExcluded",
-                    "excludedModules": []
-                  },
-                  "type": "object",
-                  "required": [
-                    "mode"
-                  ],
-                  "properties": {
-                    "mode": {
-                      "type": "string",
-                      "enum": [
-                        "loadAllButExcluded",
-                        "loadOnlyIncluded"
-                      ],
-                      "enumDescriptions": [
-                        "Load symbols for all modules unless the module is in the 'excludedModules' array.",
-                        "Do not attempt to load symbols for ANY module unless it is in the 'includedModules' array, or it is included through the 'includeSymbolsNextToModules' setting."
-                      ],
-                      "description": "Controls which of the two basic operating modes the module filter operates in.",
-                      "default": "loadAllButExcluded"
-                    },
-                    "excludedModules": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "description": "Array of modules that the debugger should NOT load symbols for. Wildcards (example: MyCompany.*.dll) are supported.\n\nThis property is ignored unless 'mode' is set to 'loadAllButExcluded'.",
-                      "default": []
-                    },
-                    "includedModules": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "description": "Array of modules that the debugger should load symbols for. Wildcards (example: MyCompany.*.dll) are supported.\n\nThis property is ignored unless 'mode' is set to 'loadOnlyIncluded'.",
-                      "default": [
-                        "MyExampleModule.dll"
-                      ]
-                    },
-                    "includeSymbolsNextToModules": {
-                      "type": "boolean",
-                      "description": "If true, for any module NOT in the 'includedModules' array, the debugger will still check next to the module itself and the launching executable, but it will not check paths on the symbol search list. This option defaults to 'true'.\n\nThis property is ignored unless 'mode' is set to 'loadOnlyIncluded'.",
-                      "default": true
-                    }
-                  }
-                }
-              }
-            },
-            "sourceLinkOptions": {
-              "description": "Options to control how Source Link connects to web servers. For more information: https://aka.ms/VSCode-CS-LaunchJson#source-link-options",
-              "default": {
-                "*": {
-                  "enabled": true
-                }
-              },
-              "type": "object",
-              "additionalItems": {
-                "type": "object",
-                "properties": {
-                  "enabled": {
-                    "title": "boolean",
-                    "description": "Is Source Link enabled for this URL?  If unspecified, this option defaults to 'true'.",
-                    "default": "true"
-                  }
-                }
-              }
-            },
-            "allowFastEvaluate": {
-              "type": "boolean",
-              "description": "When true (the default state), the debugger will attempt faster evaluation by simulating execution of simple properties and methods.",
-              "default": true
-            },
-            "targetArchitecture": {
-              "type": "string",
-              "enum": [
-                "x86_64",
-                "arm64"
-              ],
-              "description": "The architecture of the debuggee. This will automatically be detected unless this parameter is set. Allowed values are x86_64 or arm64. This value is ignored on Linux."
-            },
-            "type": {
-              "type": "string",
-              "enum": [
-                "coreclr",
-                "clr"
-              ],
-              "description": "Type type of code to debug. Can be either 'coreclr' for .NET Core debugging, or 'clr' for Desktop .NET Framework. 'clr' only works on Windows as the Desktop framework is Windows-only.",
-              "default": "coreclr"
-            },
-            "debugServer": {
-              "type": "number",
-              "description": "For debug extension development only: if a port is specified VS Code tries to connect to a debug adapter running in server mode",
-              "default": 4711
             }
+          },
+          "dotnet.unitTests.runSettingsPath": {
+            "type": "string",
+            "description": "Path to the .runsettings file which should be used when running unit tests. (Previously `omnisharp.testRunSettings`)"
+          }
+        }
+      },
+      {
+        "title": "LSP Server",
+        "order": 9,
+        "properties": {
+          "dotnet.preferCSharpExtension": {
+            "scope": "resource",
+            "type": "boolean",
+            "default": false,
+            "description": "%configuration.dotnet.preferCSharpExtension%"
+          },
+          "dotnet.dotnetPath": {
+            "type": "string",
+            "scope": "machine-overridable",
+            "description": "%configuration.dotnet.dotnetPath%"
+          },
+          "dotnet.server.path": {
+            "type": "string",
+            "scope": "machine-overridable",
+            "description": "%configuration.dotnet.server.path%"
+          },
+          "dotnet.server.startTimeout": {
+            "type": "number",
+            "scope": "machine-overridable",
+            "default": 30000,
+            "description": "%configuration.dotnet.server.startTimeout%"
+          },
+          "dotnet.server.waitForDebugger": {
+            "type": "boolean",
+            "scope": "machine-overridable",
+            "default": false,
+            "description": "%configuration.dotnet.server.waitForDebugger%"
+          },
+          "dotnet.server.trace": {
+            "scope": "window",
+            "type": "string",
+            "enum": [
+              "Trace",
+              "Debug",
+              "Information",
+              "Warning",
+              "Error",
+              "Critical",
+              "None"
+            ],
+            "default": "Information",
+            "description": "%configuration.dotnet.server.trace%"
+          },
+          "dotnet.server.extensionPaths": {
+            "scope": "machine-overridable",
+            "type": [
+              "array",
+              null
+            ],
+            "items": {
+              "type": "string"
+            },
+            "default": null,
+            "description": "%configuration.dotnet.server.extensionPaths%"
+          },
+          "dotnet.server.crashDumpPath": {
+            "scope": "machine-overridable",
+            "type": "string",
+            "default": null,
+            "description": "%configuration.dotnet.server.crashDumpPath%"
+          },
+          "dotnet.projects.binaryLogPath": {
+            "scope": "machine-overridable",
+            "type": "string",
+            "default": null,
+            "description": "Sets a path where MSBuild binary logs are written to when loading projects, to help diagnose loading errors."
           },
           "razor.languageServer.directory": {
             "type": "string",
@@ -1727,527 +1607,215 @@
             ],
             "description": "%configuration.razor.trace%",
             "order": 90
-          },
-          "csharp.debug.stopAtEntry": {
-            "type": "boolean",
-            "markdownDescription": "%generateOptionsSchema.stopAtEntry.markdownDescription%",
-            "default": false
-          },
-          "csharp.debug.console": {
-            "type": "string",
-            "enum": [
-              "internalConsole",
-              "integratedTerminal",
-              "externalTerminal"
-            ],
-            "enumDescriptions": [
-              "%generateOptionsSchema.console.internalConsole.enumDescription%",
-              "%generateOptionsSchema.console.integratedTerminal.enumDescription%",
-              "%generateOptionsSchema.console.externalTerminal.enumDescription%"
-            ],
-            "markdownDescription": "%generateOptionsSchema.console.settingsDescription%",
-            "default": "internalConsole"
-          },
-          "csharp.debug.sourceFileMap": {
-            "type": "object",
-            "markdownDescription": "%generateOptionsSchema.sourceFileMap.markdownDescription%",
-            "additionalProperties": {
-              "type": "string"
-            },
-            "default": {}
-          },
-          "csharp.debug.justMyCode": {
-            "type": "boolean",
-            "markdownDescription": "%generateOptionsSchema.justMyCode.markdownDescription%",
-            "default": true
-          },
-          "csharp.debug.requireExactSource": {
-            "type": "boolean",
-            "markdownDescription": "%generateOptionsSchema.requireExactSource.markdownDescription%",
-            "default": true
-          },
-          "csharp.debug.enableStepFiltering": {
-            "type": "boolean",
-            "markdownDescription": "%generateOptionsSchema.enableStepFiltering.markdownDescription%",
-            "default": true
-          },
-          "csharp.debug.logging.exceptions": {
-            "type": "boolean",
-            "markdownDescription": "%generateOptionsSchema.logging.exceptions.markdownDescription%",
-            "default": true
-          },
-          "csharp.debug.logging.moduleLoad": {
-            "type": "boolean",
-            "markdownDescription": "%generateOptionsSchema.logging.moduleLoad.markdownDescription%",
-            "default": true
-          },
-          "csharp.debug.logging.programOutput": {
-            "type": "boolean",
-            "markdownDescription": "%generateOptionsSchema.logging.programOutput.markdownDescription%",
-            "default": true
-          },
-          "csharp.debug.logging.browserStdOut": {
-            "type": "boolean",
-            "markdownDescription": "%generateOptionsSchema.logging.browserStdOut.markdownDescription%",
-            "default": true
-          },
-          "csharp.debug.logging.elapsedTiming": {
-            "type": "boolean",
-            "markdownDescription": "%generateOptionsSchema.logging.elapsedTiming.markdownDescription%",
-            "default": false
-          },
-          "csharp.debug.logging.threadExit": {
-            "type": "boolean",
-            "markdownDescription": "%generateOptionsSchema.logging.threadExit.markdownDescription%",
-            "default": false
-          },
-          "csharp.debug.logging.processExit": {
-            "type": "boolean",
-            "markdownDescription": "%generateOptionsSchema.logging.processExit.markdownDescription%",
-            "default": true
-          },
-          "csharp.debug.logging.engineLogging": {
-            "type": "boolean",
-            "deprecationMessage": "%generateOptionsSchema.logging.engineLogging.deprecationMessage%",
-            "default": false
-          },
-          "csharp.debug.logging.diagnosticsLog.protocolMessages": {
-            "type": "boolean",
-            "markdownDescription": "%generateOptionsSchema.logging.diagnosticsLog.protocolMessages.markdownDescription%",
-            "default": false
-          },
-          "csharp.debug.logging.diagnosticsLog.dispatcherMessages": {
-            "type": "string",
-            "enum": [
-              "none",
-              "error",
-              "important",
-              "normal"
-            ],
-            "enumDescriptions": [
-              "%generateOptionsSchema.logging.diagnosticsLog.dispatcherMessages.none.enumDescription%",
-              "%generateOptionsSchema.logging.diagnosticsLog.dispatcherMessages.error.enumDescription%",
-              "%generateOptionsSchema.logging.diagnosticsLog.dispatcherMessages.important.enumDescription%",
-              "%generateOptionsSchema.logging.diagnosticsLog.dispatcherMessages.normal.enumDescription%"
-            ],
-            "markdownDescription": "%generateOptionsSchema.logging.diagnosticsLog.dispatcherMessages.markdownDescription%",
-            "default": "none"
-          },
-          "csharp.debug.logging.diagnosticsLog.debugEngineAPITracing": {
-            "type": "string",
-            "enum": [
-              "none",
-              "error",
-              "all"
-            ],
-            "enumDescriptions": [
-              "%generateOptionsSchema.logging.diagnosticsLog.debugEngineAPITracing.none.enumDescription%",
-              "%generateOptionsSchema.logging.diagnosticsLog.debugEngineAPITracing.error.enumDescription%",
-              "%generateOptionsSchema.logging.diagnosticsLog.debugEngineAPITracing.all.enumDescription%"
-            ],
-            "markdownDescription": "%generateOptionsSchema.logging.diagnosticsLog.debugEngineAPITracing.markdownDescription%",
-            "default": "none"
-          },
-          "csharp.debug.logging.diagnosticsLog.debugRuntimeEventTracing": {
-            "type": "boolean",
-            "markdownDescription": "%generateOptionsSchema.logging.diagnosticsLog.debugRuntimeEventTracing.markdownDescription%",
-            "default": false
-          },
-          "csharp.debug.logging.diagnosticsLog.expressionEvaluationTracing": {
-            "type": "boolean",
-            "markdownDescription": "%generateOptionsSchema.logging.diagnosticsLog.expressionEvaluationTracing.markdownDescription%",
-            "default": false
-          },
-          "csharp.debug.logging.diagnosticsLog.startDebuggingTracing": {
-            "type": "boolean",
-            "markdownDescription": "%generateOptionsSchema.logging.diagnosticsLog.startDebuggingTracing.markdownDescription%",
-            "default": false
-          },
-          "csharp.debug.logging.consoleUsageMessage": {
-            "type": "boolean",
-            "description": "%generateOptionsSchema.logging.consoleUsageMessage.description%",
-            "default": true
-          },
-          "csharp.debug.suppressJITOptimizations": {
-            "type": "boolean",
-            "markdownDescription": "%generateOptionsSchema.suppressJITOptimizations.markdownDescription%",
-            "default": false
-          },
-          "csharp.debug.symbolOptions.searchPaths": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "%generateOptionsSchema.symbolOptions.searchPaths.description%",
-            "default": []
-          },
-          "csharp.debug.symbolOptions.searchMicrosoftSymbolServer": {
-            "type": "boolean",
-            "description": "%generateOptionsSchema.symbolOptions.searchMicrosoftSymbolServer.description%",
-            "default": false
-          },
-          "csharp.debug.symbolOptions.searchNuGetOrgSymbolServer": {
-            "type": "boolean",
-            "description": "%generateOptionsSchema.symbolOptions.searchNuGetOrgSymbolServer.description%",
-            "default": false
-          },
-          "csharp.debug.symbolOptions.cachePath": {
-            "type": "string",
-            "description": "%generateOptionsSchema.symbolOptions.cachePath.description%",
-            "default": ""
-          },
-          "csharp.debug.symbolOptions.moduleFilter.mode": {
-            "type": "string",
-            "enum": [
-              "loadAllButExcluded",
-              "loadOnlyIncluded"
-            ],
-            "enumDescriptions": [
-              "%generateOptionsSchema.symbolOptions.moduleFilter.mode.loadAllButExcluded.enumDescription%",
-              "%generateOptionsSchema.symbolOptions.moduleFilter.mode.loadOnlyIncluded.enumDescription%"
-            ],
-            "description": "%generateOptionsSchema.symbolOptions.moduleFilter.mode.description%",
-            "default": "loadAllButExcluded"
-          },
-          "csharp.debug.symbolOptions.moduleFilter.excludedModules": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "%generateOptionsSchema.symbolOptions.moduleFilter.excludedModules.description%",
-            "default": []
-          },
-          "csharp.debug.symbolOptions.moduleFilter.includedModules": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "%generateOptionsSchema.symbolOptions.moduleFilter.includedModules.description%",
-            "default": []
-          },
-          "csharp.debug.symbolOptions.moduleFilter.includeSymbolsNextToModules": {
-            "type": "boolean",
-            "description": "%generateOptionsSchema.symbolOptions.moduleFilter.includeSymbolsNextToModules.description%",
-            "default": true
-          },
-          "csharp.debug.allowFastEvaluate": {
-            "type": "boolean",
-            "description": "%generateOptionsSchema.allowFastEvaluate.description%",
-            "default": true
           }
-        },
-        "csharp.suppressDotnetRestoreNotification": {
-          "type": "boolean",
-          "default": false,
-          "description": "Suppress the notification window to perform a 'dotnet restore' when dependencies can't be resolved."
-        },
-        "csharp.suppressProjectJsonWarning": {
-          "type": "boolean",
-          "default": false,
-          "description": "Suppress the warning that project.json is no longer a supported project format for .NET Core applications"
-        },
-        "csharp.suppressBuildAssetsNotification": {
-          "type": "boolean",
-          "default": false,
-          "description": "Suppress the notification window to add missing assets to build or debug the application."
-        },
-        "csharp.suppressHiddenDiagnostics": {
-          "type": "boolean",
-          "default": true,
-          "description": "Suppress 'hidden' diagnostics (such as 'unnecessary using directives') from appearing in the editor or the Problems pane."
-        },
-        "csharp.referencesCodeLens.enabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "Specifies whether the references CodeLens should be shown."
-        },
-        "csharp.referencesCodeLens.filteredSymbols": {
-          "type": "array",
-          "items": {
-            "type": "string"
+        }
+      },
+      {
+        "title": "OmniSharp",
+        "order": 10,
+        "properties": {
+          "dotnet.server.useOmnisharp": {
+            "type": "boolean",
+            "default": false,
+            "description": "Switches to use the Omnisharp server for language features when enabled (requires restart). This option will not be honored with C# Dev Kit installed.",
+            "order": 0
           },
-          "default": [],
-          "description": "Array of custom symbol names for which CodeLens should be disabled."
-        },
-        "csharp.testsCodeLens.enabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "Specifies whether the run and debug test CodeLens should be shown."
-        },
-        "csharp.maxProjectFileCountForDiagnosticAnalysis": {
-          "type": "number",
-          "default": 1000,
-          "description": "Specifies the maximum number of files for which diagnostics are reported for the whole workspace. If this limit is exceeded, diagnostics will be shown for currently opened files only. Specify 0 or less to disable the limit completely."
-        },
-        "csharp.semanticHighlighting.enabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable/disable Semantic Highlighting for C# files (Razor files currently unsupported). Defaults to false. Close open files for changes to take effect.",
-          "scope": "window"
-        },
-        "csharp.showOmnisharpLogOnError": {
-          "type": "boolean",
-          "default": true,
-          "description": "Shows the OmniSharp log in the Output pane when OmniSharp reports an error."
-        },
-        "csharp.inlayHints.parameters.enabled": {
-          "type": "boolean",
-          "default": false,
-          "description": "Display inline parameter name hints"
-        },
-        "csharp.inlayHints.parameters.forLiteralParameters": {
-          "type": "boolean",
-          "default": false,
-          "description": "Show hints for literals"
-        },
-        "csharp.inlayHints.parameters.forObjectCreationParameters": {
-          "type": "boolean",
-          "default": false,
-          "description": "Show hints for 'new' expressions"
-        },
-        "csharp.inlayHints.parameters.forIndexerParameters": {
-          "type": "boolean",
-          "default": false,
-          "description": "Show hints for indexers"
-        },
-        "csharp.inlayHints.parameters.forOtherParameters": {
-          "type": "boolean",
-          "default": false,
-          "description": "Show hints for everything else"
-        },
-        "csharp.inlayHints.parameters.suppressForParametersThatDifferOnlyBySuffix": {
-          "type": "boolean",
-          "default": false,
-          "description": "Suppress hints when parameter names differ only by suffix"
-        },
-        "csharp.inlayHints.parameters.suppressForParametersThatMatchMethodIntent": {
-          "type": "boolean",
-          "default": false,
-          "description": "Suppress hints when parameter name matches the method's intent"
-        },
-        "csharp.inlayHints.parameters.suppressForParametersThatMatchArgumentName": {
-          "type": "boolean",
-          "default": false,
-          "description": "Suppress hints when argument matches parameter name"
-        },
-        "csharp.inlayHints.types.enabled": {
-          "type": "boolean",
-          "default": false,
-          "description": "Display inline type hints"
-        },
-        "csharp.inlayHints.types.forImplicitVariableTypes": {
-          "type": "boolean",
-          "default": false,
-          "description": "Show hints for variables with inferred types"
-        },
-        "csharp.inlayHints.types.forLambdaParameterTypes": {
-          "type": "boolean",
-          "default": false,
-          "description": "Show hints for lambda parameter types"
-        },
-        "csharp.inlayHints.types.forImplicitObjectCreation": {
-          "type": "boolean",
-          "default": false,
-          "description": "Show hints for implicit object creation"
-        },
-        "omnisharp.path": {
-          "type": "string",
-          "scope": "machine",
-          "description": "Specifies the path to OmniSharp. When left empty the OmniSharp version pinned to the C# Extension is used. This can be the absolute path to an OmniSharp executable, a specific version number, or \"latest\". If a version number or \"latest\" is specified, the appropriate version of OmniSharp will be downloaded on your behalf. Setting \"latest\" is an opt-in into latest beta releases of OmniSharp."
-        },
-        "omnisharp.useModernNet": {
-          "type": "boolean",
-          "default": true,
-          "scope": "window",
-          "title": "Use .NET 6 build of OmniSharp",
-          "description": "Use OmniSharp build for .NET 6. This version _does not_ support non-SDK-style .NET Framework projects, including Unity. SDK-style Framework, .NET Core, and .NET 5+ projects should see significant performance improvements."
-        },
-        "omnisharp.sdkPath": {
-          "type": "string",
-          "scope": "window",
-          "description": "Specifies the path to a .NET SDK installation to use for project loading instead of the highest version installed. Applies when \"useModernNet\" is set to true. Example: /home/username/dotnet/sdks/6.0.300."
-        },
-        "omnisharp.sdkVersion": {
-          "type": "string",
-          "scope": "window",
-          "description": "Specifies the version of the .NET SDK to use for project loading instead of the highest version installed. Applies when \"useModernNet\" is set to true. Example: 6.0.300."
-        },
-        "omnisharp.sdkIncludePrereleases": {
-          "type": "boolean",
-          "scope": "window",
-          "default": true,
-          "description": "Specifies whether to include preview versions of the .NET SDK when determining which version to use for project loading. Applies when \"useModernNet\" is set to true."
-        },
-        "omnisharp.monoPath": {
-          "type": "string",
-          "scope": "machine",
-          "description": "Specifies the path to a mono installation to use when \"useModernNet\" is set to false, instead of the default system one. Example: \"/Library/Frameworks/Mono.framework/Versions/Current\""
-        },
-        "omnisharp.dotnetPath": {
-          "type": "string",
-          "scope": "window",
-          "description": "Specified the path to a dotnet installation to use when \"useModernNet\" is set to true, instead of the default system one. This only influences the dotnet installation to use for hosting Omnisharp itself. Example: \"/home/username/mycustomdotnetdirectory\"."
-        },
-        "omnisharp.waitForDebugger": {
-          "type": "boolean",
-          "default": false,
-          "description": "Pass the --debug flag when launching the OmniSharp server to allow a debugger to be attached."
-        },
-        "omnisharp.loggingLevel": {
-          "type": "string",
-          "default": "information",
-          "enum": [
-            "trace",
-            "debug",
-            "information",
-            "warning",
-            "error",
-            "critical"
-          ],
-          "description": "Specifies the level of logging output from the OmniSharp server."
-        },
-        "omnisharp.autoStart": {
-          "type": "boolean",
-          "default": true,
-          "description": "Specifies whether the OmniSharp server will be automatically started or not. If false, OmniSharp can be started with the 'Restart OmniSharp' command"
-        },
-        "omnisharp.projectFilesExcludePattern": {
-          "type": "string",
-          "default": "**/node_modules/**,**/.git/**,**/bower_components/**",
-          "description": "The exclude pattern used by OmniSharp to find all project files."
-        },
-        "omnisharp.projectLoadTimeout": {
-          "type": "number",
-          "default": 60,
-          "description": "The time Visual Studio Code will wait for the OmniSharp server to start. Time is expressed in seconds."
-        },
-        "omnisharp.maxProjectResults": {
-          "type": "number",
-          "default": 250,
-          "description": "The maximum number of projects to be shown in the 'Select Project' dropdown (maximum 250)."
-        },
-        "omnisharp.defaultLaunchSolution": {
-          "type": "string",
-          "description": "The name of the default solution used at start up if the repo has multiple solutions. e.g.'MyAwesomeSolution.sln'. Default value is `null` which will cause the first in alphabetical order to be chosen."
-        },
-        "omnisharp.useEditorFormattingSettings": {
-          "type": "boolean",
-          "default": true,
-          "description": "Specifes whether OmniSharp should use VS Code editor settings for C# code formatting (use of tabs, indentation size)."
-        },
-        "omnisharp.minFindSymbolsFilterLength": {
-          "type": "number",
-          "default": 0,
-          "description": "The minimum number of characters to enter before 'Go to Symbol in Workspace' operation shows any results."
-        },
-        "omnisharp.maxFindSymbolsItems": {
-          "type": "number",
-          "default": 1000,
-          "description": "The maximum number of items that 'Go to Symbol in Workspace' operation can show. The limit is applied only when a positive number is specified here."
-        },
-        "omnisharp.disableMSBuildDiagnosticWarning": {
-          "type": "boolean",
-          "default": false,
-          "description": "Specifies whether notifications should be shown if OmniSharp encounters warnings or errors loading a project. Note that these warnings/errors are always emitted to the OmniSharp log"
-        },
-        "omnisharp.enableMsBuildLoadProjectsOnDemand": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, MSBuild project system will only load projects for files that were opened in the editor. This setting is useful for big C# codebases and allows for faster initialization of code navigation features only for projects that are relevant to code that is being edited. With this setting enabled OmniSharp may load fewer projects and may thus display incomplete reference lists for symbols."
-        },
-        "omnisharp.enableRoslynAnalyzers": {
-          "type": "boolean",
-          "default": false,
-          "description": "Enables support for roslyn analyzers, code fixes and rulesets."
-        },
-        "omnisharp.enableEditorConfigSupport": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enables support for reading code style, naming convention and analyzer settings from .editorconfig."
-        },
-        "omnisharp.enableDecompilationSupport": {
-          "type": "boolean",
-          "default": false,
-          "scope": "machine",
-          "description": "Enables support for decompiling external references instead of viewing metadata."
-        },
-        "omnisharp.enableImportCompletion": {
-          "type": "boolean",
-          "default": false,
-          "description": "Enables support for showing unimported types and unimported extension methods in completion lists. When committed, the appropriate using directive will be added at the top of the current file. This option can have a negative impact on initial completion responsiveness, particularly for the first few completion sessions after opening a solution."
-        },
-        "omnisharp.organizeImportsOnFormat": {
-          "type": "boolean",
-          "default": false,
-          "description": "Specifies whether 'using' directives should be grouped and sorted during document formatting."
-        },
-        "omnisharp.enableAsyncCompletion": {
-          "type": "boolean",
-          "default": false,
-          "description": "(EXPERIMENTAL) Enables support for resolving completion edits asynchronously. This can speed up time to show the completion list, particularly override and partial method completion lists, at the cost of slight delays after inserting a completion item. Most completion items will have no noticeable impact with this feature, but typing immediately after inserting an override or partial method completion, before the insert is completed, can have unpredictable results."
-        },
-        "omnisharp.analyzeOpenDocumentsOnly": {
-          "type": "boolean",
-          "default": false,
-          "description": "Only run analyzers against open files when 'enableRoslynAnalyzers' is true"
-        },
-        "omnisharp.testRunSettings": {
-          "type": "string",
-          "description": "Path to the .runsettings file which should be used when running unit tests."
-        },
-        "omnisharp.dotNetCliPaths": {
-          "type": "array",
-          "items": {
-            "type": "string"
+          "csharp.format.enable": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable/disable default C# formatter (requires restart)."
           },
-          "description": "Paths to a local download of the .NET CLI to use for running any user code.",
-          "uniqueItems": true
-        },
-        "razor.plugin.path": {
-          "type": "string",
-          "scope": "machine",
-          "description": "Overrides the path to the Razor plugin dll."
-        },
-        "razor.devmode": {
-          "type": "boolean",
-          "default": false,
-          "description": "Forces the omnisharp-vscode extension to run in a mode that enables local Razor.VSCode deving."
-        },
-        "razor.disabled": {
-          "type": "boolean",
-          "default": false,
-          "description": "Specifies whether to disable Razor language features."
-        },
-        "razor.languageServer.directory": {
-          "type": "string",
-          "scope": "machine",
-          "description": "Overrides the path to the Razor Language Server directory."
-        },
-        "razor.languageServer.debug": {
-          "type": "boolean",
-          "default": false,
-          "description": "Specifies whether to wait for debug attach when launching the language server."
-        },
-        "razor.trace": {
-          "type": "string",
-          "default": "Off",
-          "enum": [
-            "Off",
-            "Messages",
-            "Verbose"
-          ],
-          "enumDescriptions": [
-            "Does not log messages from the Razor extension",
-            "Logs only some messages from the Razor extension",
-            "Logs all messages from the Razor extension"
-          ],
-          "description": "Specifies whether to output all messages [Verbose], some messages [Messages] or not at all [Off]."
-        },
-        "razor.format.enable": {
-          "type": "boolean",
-          "scope": "window",
-          "default": true,
-          "description": "Enable/disable default Razor formatter."
+          "csharp.suppressDotnetInstallWarning": {
+            "type": "boolean",
+            "default": false,
+            "description": "Suppress the warning that the .NET Core SDK is not on the path."
+          },
+          "csharp.suppressDotnetRestoreNotification": {
+            "type": "boolean",
+            "default": false,
+            "description": "Suppress the notification window to perform a 'dotnet restore' when dependencies can't be resolved."
+          },
+          "csharp.suppressProjectJsonWarning": {
+            "type": "boolean",
+            "default": false,
+            "description": "Suppress the warning that project.json is no longer a supported project format for .NET Core applications"
+          },
+          "csharp.suppressBuildAssetsNotification": {
+            "type": "boolean",
+            "default": false,
+            "description": "Suppress the notification window to add missing assets to build or debug the application."
+          },
+          "csharp.suppressHiddenDiagnostics": {
+            "type": "boolean",
+            "default": true,
+            "description": "Suppress 'hidden' diagnostics (such as 'unnecessary using directives') from appearing in the editor or the Problems pane."
+          },
+          "csharp.referencesCodeLens.filteredSymbols": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [],
+            "description": "Array of custom symbol names for which CodeLens should be disabled."
+          },
+          "csharp.maxProjectFileCountForDiagnosticAnalysis": {
+            "type": "number",
+            "default": 1000,
+            "description": "Specifies the maximum number of files for which diagnostics are reported for the whole workspace. If this limit is exceeded, diagnostics will be shown for currently opened files only. Specify 0 or less to disable the limit completely."
+          },
+          "csharp.semanticHighlighting.enabled": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable/disable Semantic Highlighting for C# files (Razor files currently unsupported). Defaults to false. Close open files for changes to take effect.",
+            "scope": "window"
+          },
+          "csharp.showOmnisharpLogOnError": {
+            "type": "boolean",
+            "default": true,
+            "description": "Shows the OmniSharp log in the Output pane when OmniSharp reports an error."
+          },
+          "omnisharp.useModernNet": {
+            "type": "boolean",
+            "default": true,
+            "scope": "window",
+            "title": "Use .NET 6 build of OmniSharp",
+            "description": "Use OmniSharp build for .NET 6. This version _does not_ support non-SDK-style .NET Framework projects, including Unity. SDK-style Framework, .NET Core, and .NET 5+ projects should see significant performance improvements."
+          },
+          "omnisharp.sdkPath": {
+            "type": "string",
+            "scope": "window",
+            "description": "Specifies the path to a .NET SDK installation to use for project loading instead of the highest version installed. Applies when \"useModernNet\" is set to true. Example: /home/username/dotnet/sdks/6.0.300."
+          },
+          "omnisharp.sdkVersion": {
+            "type": "string",
+            "scope": "window",
+            "description": "Specifies the version of the .NET SDK to use for project loading instead of the highest version installed. Applies when \"useModernNet\" is set to true. Example: 6.0.300."
+          },
+          "omnisharp.sdkIncludePrereleases": {
+            "type": "boolean",
+            "scope": "window",
+            "default": true,
+            "description": "Specifies whether to include preview versions of the .NET SDK when determining which version to use for project loading. Applies when \"useModernNet\" is set to true."
+          },
+          "omnisharp.monoPath": {
+            "type": "string",
+            "scope": "machine",
+            "description": "Specifies the path to a mono installation to use when \"useModernNet\" is set to false, instead of the default system one. Example: \"/Library/Frameworks/Mono.framework/Versions/Current\""
+          },
+          "omnisharp.loggingLevel": {
+            "type": "string",
+            "default": "information",
+            "enum": [
+              "trace",
+              "debug",
+              "information",
+              "warning",
+              "error",
+              "critical"
+            ],
+            "description": "Specifies the level of logging output from the OmniSharp server."
+          },
+          "omnisharp.autoStart": {
+            "type": "boolean",
+            "default": true,
+            "description": "Specifies whether the OmniSharp server will be automatically started or not. If false, OmniSharp can be started with the 'Restart OmniSharp' command"
+          },
+          "omnisharp.projectFilesExcludePattern": {
+            "type": "string",
+            "default": "**/node_modules/**,**/.git/**,**/bower_components/**",
+            "description": "The exclude pattern used by OmniSharp to find all project files."
+          },
+          "omnisharp.projectLoadTimeout": {
+            "type": "number",
+            "default": 60,
+            "description": "The time Visual Studio Code will wait for the OmniSharp server to start. Time is expressed in seconds."
+          },
+          "omnisharp.maxProjectResults": {
+            "type": "number",
+            "default": 250,
+            "description": "The maximum number of projects to be shown in the 'Select Project' dropdown (maximum 250)."
+          },
+          "omnisharp.useEditorFormattingSettings": {
+            "type": "boolean",
+            "default": true,
+            "description": "Specifes whether OmniSharp should use VS Code editor settings for C# code formatting (use of tabs, indentation size)."
+          },
+          "omnisharp.minFindSymbolsFilterLength": {
+            "type": "number",
+            "default": 0,
+            "description": "The minimum number of characters to enter before 'Go to Symbol in Workspace' operation shows any results."
+          },
+          "omnisharp.maxFindSymbolsItems": {
+            "type": "number",
+            "default": 1000,
+            "description": "The maximum number of items that 'Go to Symbol in Workspace' operation can show. The limit is applied only when a positive number is specified here."
+          },
+          "omnisharp.disableMSBuildDiagnosticWarning": {
+            "type": "boolean",
+            "default": false,
+            "description": "Specifies whether notifications should be shown if OmniSharp encounters warnings or errors loading a project. Note that these warnings/errors are always emitted to the OmniSharp log"
+          },
+          "omnisharp.enableMsBuildLoadProjectsOnDemand": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, MSBuild project system will only load projects for files that were opened in the editor. This setting is useful for big C# codebases and allows for faster initialization of code navigation features only for projects that are relevant to code that is being edited. With this setting enabled OmniSharp may load fewer projects and may thus display incomplete reference lists for symbols."
+          },
+          "omnisharp.enableEditorConfigSupport": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enables support for reading code style, naming convention and analyzer settings from .editorconfig."
+          },
+          "omnisharp.enableDecompilationSupport": {
+            "type": "boolean",
+            "default": false,
+            "scope": "machine",
+            "description": "Enables support for decompiling external references instead of viewing metadata."
+          },
+          "omnisharp.enableLspDriver": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enables support for the experimental language protocol based engine (requires reload to setup bindings correctly)"
+          },
+          "omnisharp.organizeImportsOnFormat": {
+            "type": "boolean",
+            "default": false,
+            "description": "Specifies whether 'using' directives should be grouped and sorted during document formatting."
+          },
+          "omnisharp.enableAsyncCompletion": {
+            "type": "boolean",
+            "default": false,
+            "description": "(EXPERIMENTAL) Enables support for resolving completion edits asynchronously. This can speed up time to show the completion list, particularly override and partial method completion lists, at the cost of slight delays after inserting a completion item. Most completion items will have no noticeable impact with this feature, but typing immediately after inserting an override or partial method completion, before the insert is completed, can have unpredictable results."
+          },
+          "omnisharp.dotNetCliPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Paths to a local download of the .NET CLI to use for running any user code.",
+            "uniqueItems": true
+          },
+          "razor.plugin.path": {
+            "type": "string",
+            "scope": "machine",
+            "description": "Overrides the path to the Razor plugin dll."
+          },
+          "razor.devmode": {
+            "type": "boolean",
+            "default": false,
+            "description": "Forces the omnisharp-vscode extension to run in a mode that enables local Razor.VSCode deving."
+          },
+          "razor.format.enable": {
+            "type": "boolean",
+            "scope": "window",
+            "default": true,
+            "description": "Enable/disable default Razor formatter."
+          },
+          "razor.completion.commitElementsWithSpace": {
+            "type": "boolean",
+            "scope": "window",
+            "default": "false",
+            "description": "Specifies whether to commit tag helper and component elements with a space."
+          }
         }
       }
     ],
@@ -2774,7 +2342,7 @@
                 }
               },
               "pipeTransport": {
-                "description": "When present, this tells the debugger to connect to a remote computer using another executable as a pipe that will relay standard input/output between VS Code and the .NET Core debugger backend executable (vsdbg).",
+                "description": "%generateOptionsSchema.pipeTransport.description%",
                 "type": "object",
                 "required": [
                   "debuggerPath"
@@ -2816,7 +2384,7 @@
                   },
                   "debuggerPath": {
                     "type": "string",
-                    "description": "The full path to the debugger on the target machine.",
+                    "description": "%generateOptionsSchema.pipeTransport.debuggerPath.description%",
                     "default": "enter the path for the debugger on the target machine, for example ~/vsdbg/vsdbg"
                   },
                   "pipeEnv": {
@@ -3009,17 +2577,17 @@
                     "items": {
                       "type": "string"
                     },
-                    "description": "Array of symbol server URLs (example: http​://MyExampleSymbolServer) or directories (example: /build/symbols) to search for .pdb files. These directories will be searched in addition to the default locations -- next to the module and the path where the pdb was originally dropped to.",
+                    "description": "%generateOptionsSchema.symbolOptions.searchPaths.description%",
                     "default": []
                   },
                   "searchMicrosoftSymbolServer": {
                     "type": "boolean",
-                    "description": "If 'true' the Microsoft Symbol server (https​://msdl.microsoft.com​/download/symbols) is added to the symbols search path. If unspecified, this option defaults to 'false'.",
+                    "description": "%generateOptionsSchema.symbolOptions.searchMicrosoftSymbolServer.description%",
                     "default": false
                   },
                   "searchNuGetOrgSymbolServer": {
                     "type": "boolean",
-                    "description": "If 'true' the NuGet.org symbol server (https​://symbols.nuget.org​/download/symbols) is added to the symbols search path. If unspecified, this option defaults to 'false'.",
+                    "description": "%generateOptionsSchema.symbolOptions.searchNuGetOrgSymbolServer.description%",
                     "default": false
                   },
                   "cachePath": {
@@ -3279,7 +2847,7 @@
                 }
               },
               "pipeTransport": {
-                "description": "When present, this tells the debugger to connect to a remote computer using another executable as a pipe that will relay standard input/output between VS Code and the .NET Core debugger backend executable (vsdbg).",
+                "description": "%generateOptionsSchema.pipeTransport.description%",
                 "type": "object",
                 "required": [
                   "debuggerPath"
@@ -3321,7 +2889,7 @@
                   },
                   "debuggerPath": {
                     "type": "string",
-                    "description": "The full path to the debugger on the target machine.",
+                    "description": "%generateOptionsSchema.pipeTransport.debuggerPath.description%",
                     "default": "enter the path for the debugger on the target machine, for example ~/vsdbg/vsdbg"
                   },
                   "pipeEnv": {
@@ -3514,17 +3082,17 @@
                     "items": {
                       "type": "string"
                     },
-                    "description": "Array of symbol server URLs (example: http​://MyExampleSymbolServer) or directories (example: /build/symbols) to search for .pdb files. These directories will be searched in addition to the default locations -- next to the module and the path where the pdb was originally dropped to.",
+                    "description": "%generateOptionsSchema.symbolOptions.searchPaths.description%",
                     "default": []
                   },
                   "searchMicrosoftSymbolServer": {
                     "type": "boolean",
-                    "description": "If 'true' the Microsoft Symbol server (https​://msdl.microsoft.com​/download/symbols) is added to the symbols search path. If unspecified, this option defaults to 'false'.",
+                    "description": "%generateOptionsSchema.symbolOptions.searchMicrosoftSymbolServer.description%",
                     "default": false
                   },
                   "searchNuGetOrgSymbolServer": {
                     "type": "boolean",
-                    "description": "If 'true' the NuGet.org symbol server (https​://symbols.nuget.org​/download/symbols) is added to the symbols search path. If unspecified, this option defaults to 'false'.",
+                    "description": "%generateOptionsSchema.symbolOptions.searchNuGetOrgSymbolServer.description%",
                     "default": false
                   },
                   "cachePath": {
@@ -4060,7 +3628,7 @@
                 }
               },
               "pipeTransport": {
-                "description": "When present, this tells the debugger to connect to a remote computer using another executable as a pipe that will relay standard input/output between VS Code and the .NET Core debugger backend executable (vsdbg).",
+                "description": "%generateOptionsSchema.pipeTransport.description%",
                 "type": "object",
                 "required": [
                   "debuggerPath"
@@ -4102,7 +3670,7 @@
                   },
                   "debuggerPath": {
                     "type": "string",
-                    "description": "The full path to the debugger on the target machine.",
+                    "description": "%generateOptionsSchema.pipeTransport.debuggerPath.description%",
                     "default": "enter the path for the debugger on the target machine, for example ~/vsdbg/vsdbg"
                   },
                   "pipeEnv": {
@@ -4295,17 +3863,17 @@
                     "items": {
                       "type": "string"
                     },
-                    "description": "Array of symbol server URLs (example: http​://MyExampleSymbolServer) or directories (example: /build/symbols) to search for .pdb files. These directories will be searched in addition to the default locations -- next to the module and the path where the pdb was originally dropped to.",
+                    "description": "%generateOptionsSchema.symbolOptions.searchPaths.description%",
                     "default": []
                   },
                   "searchMicrosoftSymbolServer": {
                     "type": "boolean",
-                    "description": "If 'true' the Microsoft Symbol server (https​://msdl.microsoft.com​/download/symbols) is added to the symbols search path. If unspecified, this option defaults to 'false'.",
+                    "description": "%generateOptionsSchema.symbolOptions.searchMicrosoftSymbolServer.description%",
                     "default": false
                   },
                   "searchNuGetOrgSymbolServer": {
                     "type": "boolean",
-                    "description": "If 'true' the NuGet.org symbol server (https​://symbols.nuget.org​/download/symbols) is added to the symbols search path. If unspecified, this option defaults to 'false'.",
+                    "description": "%generateOptionsSchema.symbolOptions.searchNuGetOrgSymbolServer.description%",
                     "default": false
                   },
                   "cachePath": {
@@ -4565,7 +4133,7 @@
                 }
               },
               "pipeTransport": {
-                "description": "When present, this tells the debugger to connect to a remote computer using another executable as a pipe that will relay standard input/output between VS Code and the .NET Core debugger backend executable (vsdbg).",
+                "description": "%generateOptionsSchema.pipeTransport.description%",
                 "type": "object",
                 "required": [
                   "debuggerPath"
@@ -4607,7 +4175,7 @@
                   },
                   "debuggerPath": {
                     "type": "string",
-                    "description": "The full path to the debugger on the target machine.",
+                    "description": "%generateOptionsSchema.pipeTransport.debuggerPath.description%",
                     "default": "enter the path for the debugger on the target machine, for example ~/vsdbg/vsdbg"
                   },
                   "pipeEnv": {
@@ -4800,17 +4368,17 @@
                     "items": {
                       "type": "string"
                     },
-                    "description": "Array of symbol server URLs (example: http​://MyExampleSymbolServer) or directories (example: /build/symbols) to search for .pdb files. These directories will be searched in addition to the default locations -- next to the module and the path where the pdb was originally dropped to.",
+                    "description": "%generateOptionsSchema.symbolOptions.searchPaths.description%",
                     "default": []
                   },
                   "searchMicrosoftSymbolServer": {
                     "type": "boolean",
-                    "description": "If 'true' the Microsoft Symbol server (https​://msdl.microsoft.com​/download/symbols) is added to the symbols search path. If unspecified, this option defaults to 'false'.",
+                    "description": "%generateOptionsSchema.symbolOptions.searchMicrosoftSymbolServer.description%",
                     "default": false
                   },
                   "searchNuGetOrgSymbolServer": {
                     "type": "boolean",
-                    "description": "If 'true' the NuGet.org symbol server (https​://symbols.nuget.org​/download/symbols) is added to the symbols search path. If unspecified, this option defaults to 'false'.",
+                    "description": "%generateOptionsSchema.symbolOptions.searchNuGetOrgSymbolServer.description%",
                     "default": false
                   },
                   "cachePath": {

@@ -1,5 +1,5 @@
 # Instructions for setting up the .NET Core debugger
-This page gives you detailed instructions on how to debug code running under .NET Core in VS Code.
+This page gives you detailed instructions on how to debug code running under .NET Core in VS Code. 
 
 #### Your Feedback​
 File bugs and feature requests [here](https://github.com/dotnet/vscode-csharp/issues) to help us build great tooling for .NET Core.
@@ -16,12 +16,12 @@ Open the command palette in VS Code (press <kbd>F1</kbd>) and run `Extensions: I
 
 If you have previously installed the C# extension, make sure that you have a recent version. You can check this by opening the command palette (press <kbd>F1</kbd>) and running `Extensions: Show Installed Extensions`.
 
-##### 4: Wait for download of platform-specific files
+##### 4: Wait for download of platform-specific files 
 The first time that C# code is opened in VS Code, the extension will download the platform-specific files needed for debugging and editing. Debugging and editor features will not work until these steps finish.
 
 
 ### Once for each project
-The following steps have to be executed for every project.
+The following steps have to be executed for every project. 
 ##### 1: Get a project
 You can start from scratch by creating an empty console project with `dotnet new`. Begin by opening the terminal in Visual Studio Code (`View->Integrated Terminal`) and type these commands:
 
@@ -29,16 +29,16 @@ You can start from scratch by creating an empty console project with `dotnet new
     mkdir MyApplication
     cd MyApplication
     dotnet new console
-
+    
 See `dotnet new --list` for a list of all the available project templates.
 
 ##### 2: Open the directory in VS Code
 Go to `File->Open Folder` (`File->Open` on macOS) and open the directory in Visual Studio Code. If this is the first time that the C# extension has been activated, it will now download additional platform-specific dependencies.
 
 ##### 3: Add VS Code configuration files to the workspace
-VS Code needs to be configured so it understands how to build your project and debug it. For this there are two files which need to be added -- `.vscode/tasks.json` and `.vscode/launch.json`.
+VS Code needs to be configured so it understands how to build your project and debug it. For this there are two files which need to be added -- `.vscode/tasks.json` and `.vscode/launch.json`. 
 
-* Tasks.json is used to configure what command line command is executed to build your project, and launch.json configures the type of debugger you want to use, and what program should be run under that debugger.
+* Tasks.json is used to configure what command line command is executed to build your project, and launch.json configures the type of debugger you want to use, and what program should be run under that debugger. 
 * Launch.json configures VS Code to run the build task from tasks.json so that your program is automatically up-to-date each time you go to debug it.
 
 If you open the folder containing your project, the C# extension can automatically generate these files for you if you have a basic project. When you open a project and the C# extension is installed, you should see the following prompt in VS Code:
@@ -106,3 +106,4 @@ Examples conditions:
 | System.NullReferenceException, System.InvalidOperationException | This will break on both null reference exceptions and invalid operation exceptions. |
 | !System.Threading.Tasks.TaskCanceledException | This will break on all exceptions except for task canceled. |
 | !System.Threading.Tasks.TaskCanceledException, System.NotImplementedException | This will break on all exceptions except for task cancelled and not implemented. |
+

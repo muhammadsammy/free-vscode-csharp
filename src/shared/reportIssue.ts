@@ -118,7 +118,7 @@ function getLogInfo(useOmnisharp: boolean): string {
     if (useOmnisharp) {
         return `### OmniSharp log ###
 <details>Post the output from Output-->OmniSharp log here</details>
-
+        
 ### C# log ###
 <details>Post the output from Output-->C# here</details>`;
     } else {
@@ -127,7 +127,7 @@ If you can, it would be the most helpful to zip up and attach the entire extensi
 
 Additionally, if you can reproduce the issue reliably, set the value of the \`dotnet.server.trace\` option to \`Trace\` and re-run the scenario to get more detailed logs.
 -->
-
+        
 ### C# log ###
 <details>Post the output from Output-->C# here</details>
 

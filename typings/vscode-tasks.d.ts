@@ -5,8 +5,9 @@
 
 // Copied from http://code.visualstudio.com/docs/editor/tasks_appendix
 
-declare module 'vscode-tasks' {
+declare module "vscode-tasks" {
     export interface TaskConfiguration extends BaseTaskConfiguration {
+
         /**
          * The configuration's version number
          */
@@ -29,11 +30,12 @@ declare module 'vscode-tasks' {
     }
 
     export interface BaseTaskConfiguration {
+
         /**
          * The type of a custom task. Tasks of type "shell" are executed
          * inside a shell (e.g. bash, cmd, powershell, ...)
          */
-        type?: 'shell' | 'process';
+        type?: "shell" | "process";
 
         /**
          * The command to be executed. Can be an external program or a shell
@@ -75,10 +77,12 @@ declare module 'vscode-tasks' {
         tasks?: TaskDescription[];
     }
 
+
     /**
      * Options to be passed to the external program or shell
      */
     export interface CommandOptions {
+
         /**
          * The current working directory of the executed program or shell.
          * If omitted Ticino's current workspace root is used.
@@ -89,29 +93,31 @@ declare module 'vscode-tasks' {
          * The environment of the executed program or shell. If omitted
          * the parent process' environment is used.
          */
-        env?: { [key: string]: string };
+        env?: { [key: string]: string; };
 
         /**
-         * Configuration of the shell when task type is `shell`
-         */
+          * Configuration of the shell when task type is `shell`
+          */
         shell: {
+
             /**
-             * The shell to use.
-             */
+            * The shell to use.
+            */
             executable: string;
 
             /**
-             * The arguments to be passed to the shell executable to run in command mode
-             * (e.g ['-c'] for bash or ['/S', '/C'] for cmd.exe).
-             */
+            * The arguments to be passed to the shell executable to run in command mode
+            * (e.g ['-c'] for bash or ['/S', '/C'] for cmd.exe).
+            */
             args?: string[];
-        };
+        }
     }
 
     /**
      * The description of a task.
      */
     export interface TaskDescription {
+
         /**
          * The task's name
          */
@@ -121,7 +127,7 @@ declare module 'vscode-tasks' {
          * The type of a custom task. Tasks of type "shell" are executed
          * inside a shell (e.g. bash, cmd, powershell, ...)
          */
-        type: 'shell' | 'process';
+        type: "shell" | "process";
 
         /**
          * The command to execute. If the type is "shell" it should be the full
@@ -148,7 +154,7 @@ declare module 'vscode-tasks' {
         /**
          * Defines the group to which this tasks belongs
          */
-        group?: 'build' | 'string';
+        group?: "build" | "string";
 
         /**
          * The presentation options.
@@ -163,11 +169,12 @@ declare module 'vscode-tasks' {
     }
 
     export interface PresentationOptions {
+
         /**
          * Controls whether the task output is reveal in the user interface.
          * Defaults to `always`.
          */
-        reveal?: 'never' | 'silent' | 'always';
+        reveal?: "never" | "silent" | "always";
 
         /**
          * Controls whether the command associated with the task is echoed
@@ -185,7 +192,7 @@ declare module 'vscode-tasks' {
          * shared between tasks (shared) or if a new panel is created on
          * every task execution (new). Defaults to `shared`
          */
-        panel?: 'shared' | 'dedicated' | 'new';
+        panel?: "shared" | "dedicated" | "new";
     }
 
     /**
@@ -193,6 +200,7 @@ declare module 'vscode-tasks' {
      * in build output.
      */
     export interface ProblemMatcher {
+
         /**
          * The name of a base problem matcher to use. If specified the
          * base problem matcher will be used as a template and properties
@@ -251,6 +259,7 @@ declare module 'vscode-tasks' {
      * A description to track the start and end of a background task.
      */
     export interface BackgroundMatcher {
+
         /**
          * If set to true the watcher is in active mode when the task
          * starts. This is equals of issuing a line that matches the
@@ -270,6 +279,7 @@ declare module 'vscode-tasks' {
     }
 
     export interface ProblemPattern {
+
         /**
          * The regular expression to find a problem in the console output of an
          * executed task.

@@ -25,7 +25,7 @@ module.exports = {
         // Allow unused vars if prefixed by _
         "@typescript-eslint/no-unused-vars": [
             "warn",
-            {
+            { 
                 "argsIgnorePattern": "^_",
                 "varsIgnorePattern": "^_",
                 "caughtErrorsIgnorePattern": "^_"
