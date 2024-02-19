@@ -3,7 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 import { OmniSharpServer } from '../omnisharp/server';
+=======
+'use strict';
+
+import {OmniSharpServer} from '../omnisharp/server';
+>>>>>>> origin/future
 import AbstractSupport from './abstractProvider';
 import * as protocol from '../omnisharp/protocol';
 import * as serverUtils from '../omnisharp/utils';
@@ -20,9 +26,16 @@ import { LanguageMiddlewareFeature } from '../omnisharp/languageMiddlewareFeatur
 import { omnisharpOptions } from '../shared/options';
 
 export class Advisor {
+<<<<<<< HEAD
     private _disposable: CompositeDisposable;
     private _server: OmniSharpServer;
     private _packageRestoreCounter = 0;
+=======
+
+    private _disposable: Disposable;
+    private _server: OmniSharpServer;
+    private _packageRestoreCounter: number = 0;
+>>>>>>> origin/future
     private _projectSourceFileCounts: { [path: string]: number } = Object.create(null);
 
     constructor(server: OmniSharpServer) {
@@ -107,12 +120,17 @@ export class Advisor {
     }
 }
 
+<<<<<<< HEAD
 export default function reportDiagnostics(
     server: OmniSharpServer,
     advisor: Advisor,
     languageMiddlewareFeature: LanguageMiddlewareFeature
 ): IDisposable {
     return new OmniSharpDiagnosticsProvider(server, advisor, languageMiddlewareFeature);
+=======
+export default function reportDiagnostics(server: OmniSharpServer, advisor: Advisor): Disposable {
+    return new DiagnosticsProvider(server, advisor);
+>>>>>>> origin/future
 }
 
 class OmniSharpDiagnosticsProvider extends AbstractSupport {
@@ -125,6 +143,7 @@ class OmniSharpDiagnosticsProvider extends AbstractSupport {
     private _subscriptions: Subscription[] = [];
     private _suppressHiddenDiagnostics: boolean;
 
+<<<<<<< HEAD
     constructor(
         server: OmniSharpServer,
         validationAdvisor: Advisor,
@@ -144,6 +163,10 @@ class OmniSharpDiagnosticsProvider extends AbstractSupport {
                     useOmnisharpServer ? 'none' : 'openFiles'
                 ) != 'none';
         this._analyzersEnabled = analyzersEnabledLegacyOption || analyzersEnabledNewOption;
+=======
+    constructor(server: OmniSharpServer, validationAdvisor: Advisor) {
+        super(server);
+>>>>>>> origin/future
         this._validationAdvisor = validationAdvisor;
         this._diagnostics = vscode.languages.createDiagnosticCollection('csharp');
         this._suppressHiddenDiagnostics = vscode.workspace

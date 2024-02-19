@@ -11,6 +11,7 @@ import { DotnetWorkspaceConfigurationProvider } from '../shared/workspaceConfigu
 import { OmniSharpServer } from './server';
 import TestManager from '../features/dotnetTest';
 import registerCommands from '../features/commands';
+<<<<<<< HEAD
 import { PlatformInformation } from '../shared/platform';
 import { ProjectJsonDeprecatedWarning, OmnisharpStart, RazorDevModeActive } from './loggingEvents';
 import { EventStream } from '../eventStream';
@@ -25,6 +26,13 @@ import { DotnetResolver } from './dotnetResolver';
 import { Advisor } from '../features/diagnosticsProvider';
 import { OmnisharpWorkspaceDebugInformationProvider } from '../omnisharpWorkspaceDebugInformationProvider';
 import { omnisharpOptions, razorOptions } from '../shared/options';
+=======
+import forwardChanges from '../features/changeForwarding';
+import reportStatus from '../features/status';
+import {OmniSharpServer} from './server';
+import {Options} from './options';
+import {addAssetsIfNecessary, AddAssetResult} from '../assets';
+>>>>>>> origin/future
 
 export interface ActivationResult {
     readonly server: OmniSharpServer;
@@ -32,6 +40,7 @@ export interface ActivationResult {
     readonly testManager: TestManager;
 }
 
+<<<<<<< HEAD
 export async function activate(
     context: vscode.ExtensionContext,
     packageJSON: any,
@@ -66,6 +75,9 @@ export async function activate(
         outputChannel,
         languageMiddlewareFeature
     );
+=======
+    const server = new OmniSharpServer(reporter);
+>>>>>>> origin/future
     const advisor = new Advisor(server); // create before server is started
     const testManager = new TestManager(server, eventStream, languageMiddlewareFeature);
     const workspaceInformationProvider = new OmnisharpWorkspaceDebugInformationProvider(server);

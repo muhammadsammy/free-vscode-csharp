@@ -3,7 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 import { OmniSharpServer } from '../omnisharp/server';
+=======
+'use strict';
+
+import {OmniSharpServer} from '../omnisharp/server';
+>>>>>>> origin/future
 import * as serverUtils from '../omnisharp/utils';
 import { findLaunchTargets } from '../omnisharp/launcher';
 import { LaunchTarget } from '../shared/launchTarget';
@@ -43,6 +49,7 @@ export default function registerCommands(
     disposable.add(vscode.commands.registerCommand('o.pickProjectAndStart', async () => pickProjectAndStart(server)));
     disposable.add(vscode.commands.registerCommand('o.showOutput', () => eventStream.post(new ShowOmniSharpChannel())));
 
+<<<<<<< HEAD
     disposable.add(
         vscode.commands.registerCommand('dotnet.restore.project', async () =>
             pickProjectAndDotnetRestore(server, eventStream)
@@ -51,6 +58,13 @@ export default function registerCommands(
     disposable.add(
         vscode.commands.registerCommand('dotnet.restore.all', async () => dotnetRestoreAllProjects(server, eventStream))
     );
+=======
+export default function registerCommands(server: OmniSharpServer, extensionPath: string) {
+    let d1 = vscode.commands.registerCommand('o.restart', () => restartOmniSharp(server));
+    let d2 = vscode.commands.registerCommand('o.pickProjectAndStart', () => pickProjectAndStart(server));
+    let d3 = vscode.commands.registerCommand('o.showOutput', () => server.getChannel().show(vscode.ViewColumn.Three));
+    let d4 = vscode.commands.registerCommand('dotnet.restore', () => dotnetRestoreAllProjects(server));
+>>>>>>> origin/future
 
     disposable.add(
         vscode.commands.registerCommand('o.reanalyze.allProjects', async () => reAnalyzeAllProjects(server))
@@ -87,6 +101,7 @@ export default function registerCommands(
     return new CompositeDisposable(disposable);
 }
 
+<<<<<<< HEAD
 async function showDecompilationTerms(context: vscode.ExtensionContext, server: OmniSharpServer) {
     // Reset the decompilation authorization so the user will be prompted on restart.
     resetDecompilationAuthorization(context);
@@ -98,6 +113,9 @@ async function restartOmniSharp(context: vscode.ExtensionContext, server: OmniSh
     // Update decompilation authorization.
     server.decompilationAuthorized = await getDecompilationAuthorization(context);
 
+=======
+function restartOmniSharp(server: OmniSharpServer) {
+>>>>>>> origin/future
     if (server.isRunning()) {
         server.restart();
     } else {
@@ -105,9 +123,17 @@ async function restartOmniSharp(context: vscode.ExtensionContext, server: OmniSh
     }
 }
 
+<<<<<<< HEAD
 async function pickProjectAndStart(server: OmniSharpServer): Promise<void> {
     return findLaunchTargets().then(async (targets) => {
         const currentPath = server.getSolutionPathOrFolder();
+=======
+function pickProjectAndStart(server: OmniSharpServer) {
+
+    return findLaunchTargets().then(targets => {
+
+        let currentPath = server.getSolutionPathOrFolder();
+>>>>>>> origin/future
         if (currentPath) {
             for (const target of targets) {
                 if (target.target === currentPath) {
@@ -163,6 +189,7 @@ function projectsToCommands(projects: protocol.ProjectDescriptor[], eventStream:
     });
 }
 
+<<<<<<< HEAD
 async function pickProjectAndDotnetRestore(server: OmniSharpServer, eventStream: EventStream): Promise<void> {
     const descriptors = await getProjectDescriptors(server);
     eventStream.post(new CommandDotNetRestoreStart());
@@ -172,6 +199,9 @@ async function pickProjectAndDotnetRestore(server: OmniSharpServer, eventStream:
         return command.execute();
     }
 }
+=======
+export function dotnetRestoreAllProjects(server: OmniSharpServer) {
+>>>>>>> origin/future
 
 async function reAnalyzeAllProjects(server: OmniSharpServer): Promise<void> {
     await serverUtils.reAnalyze(server, {});
@@ -188,11 +218,18 @@ async function reAnalyzeCurrentProject(server: OmniSharpServer): Promise<void> {
     });
 }
 
+<<<<<<< HEAD
 async function dotnetRestoreAllProjects(server: OmniSharpServer, eventStream: EventStream): Promise<void> {
     const descriptors = await getProjectDescriptors(server);
     eventStream.post(new CommandDotNetRestoreStart());
     for (const descriptor of descriptors) {
         await dotnetRestore(descriptor.Directory, eventStream, descriptor.Name);
+=======
+export function dotnetRestoreForProject(server: OmniSharpServer, fileName: string) {
+
+    if (!server.isRunning()) {
+        return Promise.reject('OmniSharp server is not running.');
+>>>>>>> origin/future
     }
 }
 

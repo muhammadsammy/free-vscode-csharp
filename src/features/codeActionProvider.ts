@@ -3,8 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 import * as vscode from 'vscode';
 import { OmniSharpServer } from '../omnisharp/server';
+=======
+'use strict';
+
+import {CodeActionProvider, CodeActionContext, Command, CancellationToken, TextDocument, WorkspaceEdit, TextEdit, Range, Uri, workspace, commands} from 'vscode';
+import {OmniSharpServer} from '../omnisharp/server';
+>>>>>>> origin/future
 import AbstractProvider from './abstractProvider';
 import * as protocol from '../omnisharp/protocol';
 import * as serverUtils from '../omnisharp/utils';
@@ -19,8 +26,13 @@ export default class OmniSharpCodeActionProvider
 {
     private _commandId: string;
 
+<<<<<<< HEAD
     constructor(server: OmniSharpServer, languageMiddlewareFeature: LanguageMiddlewareFeature) {
         super(server, languageMiddlewareFeature);
+=======
+    constructor(server: OmniSharpServer) {
+        super(server);
+>>>>>>> origin/future
         this._commandId = 'omnisharp.runCodeAction';
         const registerCommandDisposable = vscode.commands.registerCommand(this._commandId, this._runCodeAction, this);
         this.addDisposables(new CompositeDisposable(registerCommandDisposable));

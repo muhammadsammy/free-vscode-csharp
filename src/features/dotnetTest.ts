@@ -3,9 +3,18 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 import * as net from 'net';
 import * as os from 'os';
 import * as path from 'path';
+=======
+'use strict';
+
+import {OmniSharpServer} from '../omnisharp/server';
+import {toRange} from '../omnisharp/typeConvertion';
+import * as vscode from 'vscode';
+import * as serverUtils from "../omnisharp/utils";
+>>>>>>> origin/future
 import * as protocol from '../omnisharp/protocol';
 import * as serverUtils from '../omnisharp/utils';
 import * as utils from '../common';
@@ -52,6 +61,7 @@ export default class TestManager extends AbstractProvider {
         super(server, languageMiddlewareFeature);
         this._eventStream = eventStream;
 
+<<<<<<< HEAD
         // register commands
         const d1 = vscode.commands.registerCommand('dotnet.test.run', async (testMethod, fileName, testFrameworkName) =>
             this.runDotnetTest(testMethod, fileName, testFrameworkName)
@@ -104,10 +114,60 @@ export default class TestManager extends AbstractProvider {
                 clearInterval(this._telemetryIntervalId);
                 this._telemetryIntervalId = undefined;
                 this._reportTelemetry();
+=======
+export function registerDotNetTestRunCommand(server: OmniSharpServer): vscode.Disposable {
+    return vscode.commands.registerCommand(
+        'dotnet.test.run',
+        (testMethod, fileName) => runDotnetTest(testMethod, fileName, server));
+}
+
+export function registerDotNetTestDebugCommand(server: OmniSharpServer): vscode.Disposable {
+    return vscode.commands.registerCommand(
+        'dotnet.test.debug',
+        (testMethod, fileName) => debugDotnetTest(testMethod, fileName, server));
+}
+
+// Run test through dotnet-test command. This function can be moved to a separate structure
+export function runDotnetTest(testMethod: string, fileName: string, server: OmniSharpServer) {
+    getTestOutputChannel().show();
+    getTestOutputChannel().appendLine('Running test ' + testMethod + '...');
+    serverUtils
+        .runDotNetTest(server, { FileName: fileName, MethodName: testMethod })
+        .then(
+        response => {
+            if (response.Pass) {
+                getTestOutputChannel().appendLine('Test passed \n');
+>>>>>>> origin/future
             }
         });
 
+<<<<<<< HEAD
         this.addDisposables(new CompositeDisposable(d1, d2, d3, d4, d5, d6, d7));
+=======
+// Run test through dotnet-test command with debugger attached
+export function debugDotnetTest(testMethod: string, fileName: string, server: OmniSharpServer) {
+    serverUtils.getTestStartInfo(server, { FileName: fileName, MethodName: testMethod }).then(response => {
+        vscode.commands.executeCommand(
+            'vscode.startDebug', {
+                "name": ".NET test launch",
+                "type": "coreclr",
+                "request": "launch",
+                "program": response.Executable,
+                "args": response.Argument.split(' '),
+                "cwd": "${workspaceRoot}",
+                "stopAtEntry": false
+            }
+        ).then(
+            response => { },
+            reason => { vscode.window.showErrorMessage(`Failed to start debugger on test because ${reason}.`) });
+    });
+}
+
+export function updateCodeLensForTest(bucket: vscode.CodeLens[], fileName: string, node: protocol.Node, isDebugEnable: boolean) {
+    // backward compatible check: Features property doesn't present on older version OmniSharp
+    if (node.Features == undefined) {
+        return;
+>>>>>>> origin/future
     }
 
     private _recordRunRequest(testFrameworkName?: string): void {

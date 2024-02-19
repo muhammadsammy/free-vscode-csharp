@@ -9,21 +9,36 @@ const priorityCommands = [
     protocol.Requests.ChangeBuffer,
     protocol.Requests.FormatAfterKeystroke,
     protocol.Requests.FormatRange,
+<<<<<<< HEAD
     protocol.Requests.UpdateBuffer,
 ];
 
 const normalCommands = [
     protocol.Requests.Completion,
     protocol.Requests.CompletionResolve,
+=======
+    protocol.Requests.UpdateBuffer
+];
+
+const normalCommands = [
+    protocol.Requests.AutoComplete,
+>>>>>>> origin/future
     protocol.Requests.FilesChanged,
     protocol.Requests.FindSymbols,
     protocol.Requests.FindUsages,
     protocol.Requests.GetCodeActions,
+<<<<<<< HEAD
     protocol.V2.Requests.GoToDefinition,
     protocol.Requests.RunCodeAction,
     protocol.Requests.SignatureHelp,
     protocol.Requests.TypeLookup,
     protocol.Requests.GoToTypeDefinition,
+=======
+    protocol.Requests.GoToDefinition,
+    protocol.Requests.RunCodeAction,
+    protocol.Requests.SignatureHelp,
+    protocol.Requests.TypeLookup
+>>>>>>> origin/future
 ];
 
 const prioritySet = new Set<string>(priorityCommands);
@@ -32,11 +47,19 @@ const deferredSet = new Set<string>();
 
 const nonDeferredSet = new Set<string>();
 
+<<<<<<< HEAD
 for (const command of priorityCommands) {
     nonDeferredSet.add(command);
 }
 
 for (const command of normalCommands) {
+=======
+for (let command of priorityCommands) {
+    nonDeferredSet.add(command);
+}
+
+for (let command of normalCommands) {
+>>>>>>> origin/future
     nonDeferredSet.add(command);
 }
 
@@ -59,4 +82,8 @@ export function isDeferredCommand(command: string) {
 
     deferredSet.add(command);
     return true;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/future

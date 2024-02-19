@@ -305,7 +305,11 @@ export async function launchOmniSharp(
         launch(cwd, args, launchPath, platformInfo, monoResolver, dotnetResolver)
             .then((result) => {
                 // async error - when target not not ENEOT
+<<<<<<< HEAD
                 result.process.on('error', (err) => {
+=======
+                result.process.on('error', err => {
+>>>>>>> origin/future
                     reject(err);
                 });
 
@@ -427,12 +431,25 @@ async function launch(
     return coreLaunch(platformInfo, configureResults);
 }
 
+<<<<<<< HEAD
 function coreLaunch(platformInfo: PlatformInformation, configuration: LaunchConfiguration): IntermediateLaunchResult {
     const { cwd, args, path, launchPath, env } = configuration;
 
     switch (configuration.hostKind) {
         case '.NET': {
             const process = spawn(path, args, { detached: false, cwd, env });
+=======
+function launchNixMono(launchPath: string, cwd: string, args: string[]): Promise<LaunchResult> {
+    return canLaunchMono()
+        .then(() => {
+            let argsCopy = args.slice(0); // create copy of details args
+            argsCopy.unshift(launchPath);
+
+            let process = spawn('mono', argsCopy, {
+                detached: false,
+                cwd: cwd
+            });
+>>>>>>> origin/future
 
             return {
                 process,
