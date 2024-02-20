@@ -1,8 +1,14 @@
 {
   "name": "csharp",
+<<<<<<< HEAD
   "publisher": "muhammad-sammy",
   "version": "2.15.30",
   "description": "Free/Libre C# support for vscode-compatible editors.",
+=======
+  "publisher": "ms-vscode",
+  "version": "1.5.0-future-preview1",
+  "description": "C# for Visual Studio Code (powered by OmniSharp).",
+>>>>>>> origin/future
   "displayName": "C#",
   "author": "Muhammad Sammy",
   "license": "SEE LICENSE IN RuntimeLicenses/license.txt",

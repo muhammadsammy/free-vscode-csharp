@@ -80,11 +80,16 @@ export namespace WireProtocol {
     }
 }
 
+<<<<<<< HEAD
 export interface FileBasedRequest {
     FileName?: string;
 }
 
 export interface Request extends FileBasedRequest {
+=======
+export interface Request {
+    Filename: string;
+>>>>>>> origin/future
     Line?: number;
     Column?: number;
     Buffer?: string;

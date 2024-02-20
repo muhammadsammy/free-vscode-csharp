@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 import * as fs from 'fs';
 import * as path from 'path';
 import * as protocol from './protocol';
@@ -34,6 +35,21 @@ import TestManager from '../features/dotnetTest';
 import { findLaunchTargets } from './launcher';
 import { ProjectConfigurationMessage } from '../shared/projectConfiguration';
 import { commonOptions, omnisharpOptions, razorOptions } from '../shared/options';
+=======
+import { EventEmitter } from 'events';
+import { ChildProcess, exec } from 'child_process';
+import { ReadLine, createInterface } from 'readline';
+import { launchOmniSharp } from './launcher';
+import { Options } from './options';
+import { Logger } from '../logger';
+import { DelayTracker } from './delayTracker';
+import { LaunchTarget, findLaunchTargets } from './launcher';
+import { Request, RequestQueueCollection } from './requestQueue';
+import TelemetryReporter from 'vscode-extension-telemetry';
+import * as path from 'path';
+import * as protocol from './protocol';
+import * as vscode from 'vscode';
+>>>>>>> origin/future
 
 enum ServerState {
     Starting,
@@ -41,6 +57,7 @@ enum ServerState {
     Stopped,
 }
 
+<<<<<<< HEAD
 type State =
     | {
           status: ServerState.Stopped;
@@ -57,6 +74,9 @@ type State =
       };
 
 export namespace Events {
+=======
+module Events {
+>>>>>>> origin/future
     export const StateChanged = 'stateChanged';
 
     export const StdOut = 'stdout';
@@ -94,14 +114,36 @@ export namespace Events {
 const TelemetryReportingDelay = 2 * 60 * 1000; // two minutes
 
 export class OmniSharpServer {
+<<<<<<< HEAD
     private _delayTrackers: { [requestName: string]: DelayTracker } = {};
 
     private _eventBus = new EventEmitter();
     private _state: State = { status: ServerState.Stopped };
     private _launchTarget: LaunchTarget | undefined;
+=======
+
+    private static _nextId = 1;
+
+    private _debugMode: boolean = false;
+
+    private _readLine: ReadLine;
+    private _disposables: vscode.Disposable[] = [];
+
+    private _reporter: TelemetryReporter;
+    private _delayTrackers: { [requestName: string]: DelayTracker };
+    private _telemetryIntervalId: NodeJS.Timer = undefined;
+
+    private _eventBus = new EventEmitter();
+    private _state: ServerState = ServerState.Stopped;
+    private _launchTarget: LaunchTarget;
+    private _requestQueue: RequestQueueCollection;
+    private _channel: vscode.OutputChannel;
+    private _logger: Logger;
+>>>>>>> origin/future
 
     private _sessionProperties: { [key: string]: any } = {};
 
+<<<<<<< HEAD
     private _omnisharpManager: OmnisharpManager;
     private updateProjectDebouncer = new Subject<ObservableEvents.ProjectModified>();
     private firstUpdateProject: boolean;
@@ -136,6 +178,22 @@ export class OmniSharpServer {
 
     public get sessionProperties() {
         return this._sessionProperties;
+=======
+    private _serverProcess: ChildProcess;
+    private _options: Options;
+
+    constructor(reporter: TelemetryReporter) {
+        this._reporter = reporter;
+
+        this._channel = vscode.window.createOutputChannel('OmniSharp Log');
+        this._logger = new Logger(message => this._channel.append(message));
+
+        const logger = this._debugMode
+            ? this._logger
+            : new Logger(message => { });
+
+        this._requestQueue = new RequestQueueCollection(logger, 8, request => this._makeRequest(request));
+>>>>>>> origin/future
     }
 
     public isRunning(): boolean {
@@ -411,6 +469,7 @@ export class OmniSharpServer {
 
         const solutionPath = launchTarget.target;
         const cwd = path.dirname(solutionPath);
+<<<<<<< HEAD
 
         const args: string[] = [
             '-z',
@@ -418,6 +477,12 @@ export class OmniSharpServer {
             solutionPath,
             '--hostPID',
             process.pid.toString(),
+=======
+        let args = [
+            '-s', solutionPath,
+            '--hostPID', process.pid.toString(),
+            '--stdio',
+>>>>>>> origin/future
             'DotNet:enablePackageRestore=false',
             '--loglevel',
             omnisharpOptions.loggingLevel,
@@ -438,6 +503,7 @@ export class OmniSharpServer {
             args.push('--plugin', razorPluginPath);
         }
 
+<<<<<<< HEAD
         if (commonOptions.waitForDebugger === true) {
             args.push('--debug');
         }
@@ -446,6 +512,13 @@ export class OmniSharpServer {
         for (let i = 0; i < excludePath.length; i++) {
             args.push(`FileOptions:SystemExcludeSearchPatterns:${i}=${excludePath[i]}`);
         }
+=======
+        this._logger.appendLine(`Starting OmniSharp server at ${new Date().toLocaleString()}`);
+        this._logger.increaseIndent();
+        this._logger.appendLine(`Target: ${solutionPath}`);
+        this._logger.decreaseIndent();
+        this._logger.appendLine();
+>>>>>>> origin/future
 
         if (omnisharpOptions.enableMsBuildLoadProjectsOnDemand === true) {
             args.push('MsBuild:LoadProjectsOnDemand=true');
@@ -576,6 +649,7 @@ export class OmniSharpServer {
 
             this._delayTrackers = {};
 
+<<<<<<< HEAD
             if (razorPluginPath !== undefined && razorOptions.razorPluginPath) {
                 if (fs.existsSync(razorPluginPath)) {
                     this.eventStream.post(new ObservableEvents.RazorPluginPathSpecified(razorPluginPath));
@@ -586,11 +660,28 @@ export class OmniSharpServer {
 
             this._fireEvent(Events.ServerStart, solutionPath);
         } catch (err) {
+=======
+            return this._doConnect();
+        }).then(() => {
+            return vscode.commands.getCommands()
+                .then(commands => {
+                    if (commands.find(c => c === 'vscode.startDebug')) {
+                        this._isDebugEnable = true;
+                    }
+                });
+        }).then(() => {
+            // Start telemetry reporting
+            this._telemetryIntervalId = setInterval(() => this._reportTelemetry(), TelemetryReportingDelay);
+        }).then(() => {
+            this._requestQueue.drain();
+        }).catch(err => {
+>>>>>>> origin/future
             this._fireEvent(Events.ServerError, err);
             return this.stop();
         }
     }
 
+<<<<<<< HEAD
     public async registerProviders(eventStream: EventStream, advisor: Advisor, testManager: TestManager) {
         if (this._state.status !== ServerState.Started) {
             this.eventStream.post(
@@ -608,6 +699,15 @@ export class OmniSharpServer {
     private onProjectConfigurationReceived(listener: (e: ProjectConfigurationMessage) => void) {
         return this._addListener(Events.ProjectConfiguration, listener);
     }
+=======
+    public stop(): Promise<void> {
+
+        while (this._disposables.length) {
+            this._disposables.pop().dispose();
+        }
+
+        let cleanupPromise: Promise<void>;
+>>>>>>> origin/future
 
     private debounceUpdateProjectWithLeadingTrue = () => {
         // Call the updateProjectInfo directly if it is the first time, otherwise debounce the request
@@ -739,16 +839,30 @@ export class OmniSharpServer {
 
     // --- requests et al
 
+<<<<<<< HEAD
     public async makeRequest<TResponse>(command: string, data?: any, token?: CancellationToken): Promise<TResponse> {
         if (this._state.status !== ServerState.Started) {
             throw new Error('OmniSharp server is not running.');
         }
 
         const { engine } = this._state;
+=======
+    public makeRequest<TResponse>(command: string, data?: any, token?: vscode.CancellationToken): Promise<TResponse> {
+
+        if (this._getState() !== ServerState.Started) {
+            return Promise.reject<TResponse>('server has been stopped or not started');
+        }
+
+        console.log(`makeRequest: command=${command}`);
+
+        let startTime: number;
+        let request: Request;
+>>>>>>> origin/future
 
         const startTime = Date.now();
         const response = await engine.makeRequest<TResponse>(command, data, token);
 
+<<<<<<< HEAD
         const endTime = Date.now();
         const elapsedTime = endTime - startTime;
         this._recordRequestDelay(command, elapsedTime);
@@ -758,5 +872,171 @@ export class OmniSharpServer {
 
     public async makeRequest0(command: string, data?: any, token?: CancellationToken): Promise<void> {
         await this.makeRequest<Record<string, never>>(command, data, token);
+=======
+            request = {
+                command,
+                data,
+                onSuccess: value => resolve(value),
+                onError: err => reject(err)
+            };
+
+            this._requestQueue.enqueue(request);
+        });
+
+        if (token) {
+            token.onCancellationRequested(() => {
+                this._requestQueue.cancelRequest(request);
+            });
+        }
+
+        return promise.then(response => {
+            let endTime = Date.now();
+            let elapsedTime = endTime - startTime;
+            this._recordRequestDelay(command, elapsedTime);
+
+            return response;
+        });
+    }
+
+    private _doConnect(): Promise<void> {
+
+        this._serverProcess.stderr.on('data', (data: any) => {
+            this._fireEvent('stderr', String(data));
+        });
+
+        this._readLine = createInterface({
+            input: this._serverProcess.stdout,
+            output: this._serverProcess.stdin,
+            terminal: false
+        });
+
+        const promise = new Promise<void>((resolve, reject) => {
+            let listener: vscode.Disposable;
+
+            // Convert the timeout from the seconds to milliseconds, which is required by setTimeout().
+            const timeoutDuration = this._options.projectLoadTimeout * 1000;
+
+            // timeout logic
+            const handle = setTimeout(() => {
+                if (listener) {
+                    listener.dispose();
+                }
+
+                reject(new Error("OmniSharp server load timed out. Use the 'omnisharp.projectLoadTimeout' setting to override the default delay (one minute)."));
+            }, timeoutDuration);
+
+            // handle started-event
+            listener = this.onOmnisharpStart(() => {
+                if (listener) {
+                    listener.dispose();
+                }
+
+                clearTimeout(handle);
+                resolve();
+            });
+        });
+
+        const lineReceived = this._onLineReceived.bind(this);
+
+        this._readLine.addListener('line', lineReceived);
+
+        this._disposables.push(new vscode.Disposable(() => {
+            this._readLine.removeListener('line', lineReceived);
+        }));
+
+        return promise;
+    }
+
+    private _onLineReceived(line: string) {
+        if (line[0] !== '{') {
+            this._logger.appendLine(line);
+            return;
+        }
+
+        let packet: protocol.WireProtocol.Packet;
+        try {
+            packet = JSON.parse(line);
+        }
+        catch (err) {
+            // This isn't JSON
+            return;
+        }
+
+        if (!packet.Type) {
+            // Bogus packet
+            return;
+        }
+
+        switch (packet.Type) {
+            case 'response':
+                this._handleResponsePacket(<protocol.WireProtocol.ResponsePacket>packet);
+                break;
+            case 'event':
+                this._handleEventPacket(<protocol.WireProtocol.EventPacket>packet);
+                break;
+            default:
+                console.warn(`Unknown packet type: ${packet.Type}`);
+                break;
+        }
+    }
+
+    private _handleResponsePacket(packet: protocol.WireProtocol.ResponsePacket) {
+        const request = this._requestQueue.dequeue(packet.Command, packet.Request_seq);
+
+        if (!request) {
+            this._logger.appendLine(`Received response for ${packet.Command} but could not find request.`);
+            return;
+        }
+
+        if (packet.Success) {
+            request.onSuccess(packet.Body);
+        }
+        else {
+            request.onError(packet.Message || packet.Body);
+        }
+
+        this._requestQueue.drain();
+    }
+
+    private _handleEventPacket(packet: protocol.WireProtocol.EventPacket): void {
+        if (packet.Event === 'log') {
+            const entry = <{ LogLevel: string; Name: string; Message: string; }>packet.Body;
+            this._logOutput(entry.LogLevel, entry.Name, entry.Message);
+        } 
+        else {
+            // fwd all other events
+            this._fireEvent(packet.Event, packet.Body);
+        }
+    }
+
+    private _makeRequest(request: Request) {
+        const id = OmniSharpServer._nextId++;
+
+        const requestPacket: protocol.WireProtocol.RequestPacket = {
+            Type: 'request',
+            Seq: id,
+            Command: request.command,
+            Arguments: request.data
+        };
+
+        if (this._debugMode) {
+            this._logger.appendLine(`Making request: ${request.command} (${id})`);
+        }
+
+        this._serverProcess.stdin.write(JSON.stringify(requestPacket) + '\n');
+
+        return id;
+    }
+
+    private _logOutput(logLevel: string, name: string, message: string) {
+        const timing200Pattern = /^\[INFORMATION:OmniSharp.Middleware.LoggingMiddleware\] \/[\/\w]+: 200 \d+ms/;
+
+        const output = `[${logLevel}:${name}] ${message}`;
+        
+        // strip stuff like: /codecheck: 200 339ms
+        if (this._debugMode || !timing200Pattern.test(output)) {
+            this._logger.appendLine(output);
+        }
+>>>>>>> origin/future
     }
 }
