@@ -285,13 +285,20 @@ export class DebugAdapterExecutableFactory implements vscode.DebugAdapterDescrip
         // use the executable specified in the package.json if it exists or determine it based on some other information (e.g. the session)
         if (!executable) {
             const dotNetInfo = await getDotnetInfo(omnisharpOptions.dotNetCliPaths);
-
-            const command = path.join(
-                common.getExtensionPath(),
-                '.debugger',
-                'netcoredbg',
-                'netcoredbg' + CoreClrDebugUtil.getPlatformExeExtension()
-            );
+            const pipeTransport = _session.configuration.pipeTransport;
+            let command = '';
+            let args = ['--interpreter=vscode'];
+            if (typeof pipeTransport === 'object') {
+                command = pipeTransport.debuggerPath;
+                args = pipeTransport.pipeArgs;
+            } else {
+                command = path.join(
+                    common.getExtensionPath(),
+                    '.debugger',
+                    'netcoredbg',
+                    'netcoredbg' + CoreClrDebugUtil.getPlatformExeExtension()
+                );
+            }
 
             // Look to see if DOTNET_ROOT is set, then use dotnet cli path
             const dotnetRoot: string =
@@ -306,7 +313,7 @@ export class DebugAdapterExecutableFactory implements vscode.DebugAdapterDescrip
                 };
             }
 
-            executable = new vscode.DebugAdapterExecutable(command, ['--interpreter=vscode'], options);
+            executable = new vscode.DebugAdapterExecutable(command, args, options);
         }
 
         // make VS Code launch the DA executable
