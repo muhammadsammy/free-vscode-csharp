@@ -325,7 +325,7 @@ export class DebugAdapterExecutableFactory implements vscode.DebugAdapterDescrip
                     args.push(pipeTransport.pipeProgram);
                 }
                 if (pipeTransport.pipeArgs) {
-                    args.push(pipeTransport.pipeArgs);
+                    args.push(...pipeTransport.pipeArgs);
                 }
                 if (pipeTransport.pipeCwd) {
                     options.cwd = pipeTransport.pipeCwd;
