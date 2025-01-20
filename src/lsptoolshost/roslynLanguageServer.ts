@@ -1060,7 +1060,7 @@ export async function activateRoslynLanguageServer(
     context: vscode.ExtensionContext,
     platformInfo: PlatformInformation,
     optionObservable: Observable<void>,
-    outputChannel: vscode.OutputChannel,
+    outputChannel: vscode.LogOutputChannel,
     languageServerEvents: RoslynLanguageServerEvents
 ): Promise<RoslynLanguageServer> {
     // Create a channel for outputting general logs from the language server.
