@@ -153,7 +153,7 @@ export class DotnetRuntimeExtensionResolver implements IHostExecutableResolver {
         const contents = await readFile(vsixManifestFile, 'utf-8');
         const targetPlatformMatch = /TargetPlatform="(.*)"/.exec(contents);
         if (!targetPlatformMatch) {
-            throw new Error(`Could not find extension target platform in ${vsixManifestFile}`);
+            return undefined;
         }
 
         const targetPlatform = targetPlatformMatch[1];
