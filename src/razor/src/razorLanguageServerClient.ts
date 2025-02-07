@@ -36,7 +36,7 @@ export class RazorLanguageServerClient implements vscode.Disposable {
         private readonly vscodeType: typeof vscode,
         private readonly languageServerDir: string,
         private readonly razorTelemetryReporter: RazorTelemetryReporter,
-        //@ts-ignore
+        //@ts-expect-error unused
         private readonly isCSharpDevKitActivated: boolean,
         private readonly env: NodeJS.ProcessEnv,
         private readonly dotnetExecutablePath: string,
