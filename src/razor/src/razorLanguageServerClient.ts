@@ -260,8 +260,14 @@ export class RazorLanguageServerClient implements vscode.Disposable {
             args.push('--SingleServerCompletionSupport');
             args.push('true');
 
-            if (this.isCSharpDevKitActivated) {
-                args.push('--sessionId', getSessionId());
+            if (options.forceRuntimeCodeGeneration) {
+                args.push('--ForceRuntimeCodeGeneration');
+                args.push('true');
+            }
+
+            if (options.useNewFormattingEngine) {
+                args.push('--UseNewFormattingEngine');
+                args.push('true');
             }
         }
 
