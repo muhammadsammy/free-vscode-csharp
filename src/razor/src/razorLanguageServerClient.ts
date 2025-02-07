@@ -14,7 +14,6 @@ import { RazorLanguageServerOptions } from './razorLanguageServerOptions';
 import { resolveRazorLanguageServerOptions } from './razorLanguageServerOptionsResolver';
 import { RazorLogger } from './razorLogger';
 import { TelemetryReporter as RazorTelemetryReporter } from './telemetryReporter';
-import { randomUUID } from 'crypto';
 import { showErrorMessage } from '../../shared/observers/utils/showMessage';
 import { RazorLanguageClient } from './razorLanguageClient';
 
@@ -37,7 +36,8 @@ export class RazorLanguageServerClient implements vscode.Disposable {
         private readonly vscodeType: typeof vscode,
         private readonly languageServerDir: string,
         private readonly razorTelemetryReporter: RazorTelemetryReporter,
-        // private readonly isCSharpDevKitActivated: boolean,
+        //@ts-ignore
+        private readonly isCSharpDevKitActivated: boolean,
         private readonly env: NodeJS.ProcessEnv,
         private readonly dotnetExecutablePath: string,
         private readonly logger: RazorLogger
