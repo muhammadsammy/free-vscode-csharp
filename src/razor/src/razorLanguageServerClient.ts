@@ -37,7 +37,7 @@ export class RazorLanguageServerClient implements vscode.Disposable {
         private readonly vscodeType: typeof vscode,
         private readonly languageServerDir: string,
         private readonly razorTelemetryReporter: RazorTelemetryReporter,
-        private readonly isCSharpDevKitActivated: boolean,
+        // private readonly isCSharpDevKitActivated: boolean,
         private readonly env: NodeJS.ProcessEnv,
         private readonly dotnetExecutablePath: string,
         private readonly logger: RazorLogger
@@ -305,13 +305,13 @@ export class RazorLanguageServerClient implements vscode.Disposable {
 
 // VS code will have a default session id when running under tests. Since we may still
 // report telemetry, we need to give a unique session id instead of the default value.
-function getSessionId(): string {
-    const sessionId = vscode.env.sessionId;
+// function getSessionId(): string {
+//     const sessionId = vscode.env.sessionId;
 
-    // 'somevalue.sessionid' is the test session id provided by vs code
-    if (sessionId.toLowerCase() === 'somevalue.sessionid') {
-        return randomUUID();
-    }
+//     // 'somevalue.sessionid' is the test session id provided by vs code
+//     if (sessionId.toLowerCase() === 'somevalue.sessionid') {
+//         return randomUUID();
+//     }
 
-    return sessionId;
-}
+//     return sessionId;
+// }
