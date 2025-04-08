@@ -6,8 +6,9 @@
 import * as cp from 'child_process';
 import { EventEmitter } from 'events';
 import * as vscode from 'vscode';
-import { RequestHandler, RequestType } from 'vscode-jsonrpc';
-import { GenericNotificationHandler, InitializeResult, LanguageClientOptions, State } from 'vscode-languageclient';
+import { GenericNotificationHandler, RequestHandler, RequestType } from 'vscode-jsonrpc';
+import { InitializeResult } from 'vscode-languageserver-protocol';
+import { LanguageClientOptions, State } from 'vscode-languageclient';
 import { ServerOptions } from 'vscode-languageclient/node';
 import { RazorLanguage } from './razorLanguage';
 import { RazorLanguageServerOptions } from './razorLanguageServerOptions';
@@ -16,6 +17,7 @@ import { RazorLogger } from './razorLogger';
 import { TelemetryReporter as RazorTelemetryReporter } from './telemetryReporter';
 import { showErrorMessage } from '../../shared/observers/utils/showMessage';
 import { RazorLanguageClient } from './razorLanguageClient';
+import { provideDiagnostics, provideWorkspaceDiagnostics } from '../../lsptoolshost/diagnostics/diagnosticMiddleware';
 
 const events = {
     ServerStop: 'ServerStop',
@@ -234,6 +236,10 @@ export class RazorLanguageServerClient implements vscode.Disposable {
         this.clientOptions = {
             outputChannel: options.outputChannel,
             documentSelector: [{ language: RazorLanguage.id, pattern: RazorLanguage.globbingPattern }],
+            middleware: {
+                provideDiagnostics,
+                provideWorkspaceDiagnostics,
+            },
         };
 
         const args: string[] = [];
@@ -260,10 +266,8 @@ export class RazorLanguageServerClient implements vscode.Disposable {
             args.push('--SingleServerCompletionSupport');
             args.push('true');
 
-            if (options.forceRuntimeCodeGeneration) {
-                args.push('--ForceRuntimeCodeGeneration');
-                args.push('true');
-            }
+            args.push('--ForceRuntimeCodeGeneration');
+            args.push(options.forceRuntimeCodeGeneration ? 'true' : 'false');
 
             if (options.useNewFormattingEngine) {
                 args.push('--UseNewFormattingEngine');

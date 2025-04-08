@@ -15,44 +15,42 @@ import { PlatformInformation } from './shared/platform';
 import TelemetryReporter from '@vscode/extension-telemetry';
 import { vscodeNetworkSettingsProvider } from './networkSettings';
 import createOptionStream from './shared/observables/createOptionStream';
-import { activateRazorExtension } from './razor/razor';
 import { AbsolutePathPackage } from './packageManager/absolutePathPackage';
 import { downloadAndInstallPackages } from './packageManager/downloadAndInstallPackages';
 import IInstallDependencies from './packageManager/IInstallDependencies';
 import { installRuntimeDependencies } from './installRuntimeDependencies';
 import { isValidDownload } from './packageManager/isValidDownload';
-import { getDotnetPackApi } from './dotnetPack';
-import { RoslynLanguageServer, activateRoslynLanguageServer } from './lsptoolshost/roslynLanguageServer';
 import { MigrateOptions } from './shared/migrateOptions';
-import { getBrokeredServiceContainer } from './lsptoolshost/services/brokeredServicesHosting';
-import { CSharpDevKitExports } from './csharpDevKitExports';
-import Descriptors from './lsptoolshost/services/descriptors';
-import { GlobalBrokeredServiceContainer } from '@microsoft/servicehub-framework';
 import { CSharpExtensionExports, OmnisharpExtensionExports } from './csharpExtensionExports';
-import { csharpDevkitExtensionId, getCSharpDevKit } from './utils/getCSharpDevKit';
-import { BlazorDebugConfigurationProvider } from './razor/src/blazorDebug/blazorDebugConfigurationProvider';
-import { RoslynLanguageServerExport } from './lsptoolshost/roslynLanguageServerExportChannel';
-import { RoslynLanguageServerEvents } from './lsptoolshost/languageServerEvents';
-import { ServerState } from './lsptoolshost/serverStateChange';
-import { SolutionSnapshotProvider } from './lsptoolshost/services/solutionSnapshotProvider';
-import { commonOptions, languageServerOptions, omnisharpOptions, razorOptions } from './shared/options';
-import { BuildResultDiagnostics } from './lsptoolshost/services/buildResultReporterService';
-import { debugSessionTracker } from './coreclrDebug/provisionalDebugSessionTracker';
-import { getComponentFolder } from './lsptoolshost/builtInComponents';
-import { activateOmniSharpLanguageServer, ActivationResult } from './omnisharp/omnisharpLanguageServer';
-import { ActionOption, showErrorMessage } from './shared/observers/utils/showMessage';
+import { getCSharpDevKit } from './utils/getCSharpDevKit';
+import { commonOptions, omnisharpOptions } from './shared/options';
+import { TelemetryEventNames } from './shared/telemetryEventNames';
+import { checkDotNetRuntimeExtensionVersion } from './checkDotNetRuntimeExtensionVersion';
+import { checkIsSupportedPlatform } from './checkSupportedPlatform';
+import { activateOmniSharp } from './activateOmniSharp';
+import { activateRoslyn } from './activateRoslyn';
 
 export async function activate(
     context: vscode.ExtensionContext
 ): Promise<CSharpExtensionExports | OmnisharpExtensionExports | null> {
+    // Start measuring the activation time
+    const startActivation = process.hrtime();
+
     const csharpChannel = vscode.window.createOutputChannel('C#', { log: true });
-
-    await MigrateOptions(vscode);
-    const optionStream = createOptionStream(vscode);
-
-    const eventStream = new EventStream();
+    csharpChannel.trace('Activating C# Extension');
 
     util.setExtensionPath(context.extension.extensionPath);
+
+    const aiKey = context.extension.packageJSON.contributes.debuggers[0].aiKey;
+    const reporter = new TelemetryReporter(aiKey);
+    // ensure it gets properly disposed. Upon disposal the events will be flushed.
+    context.subscriptions.push(reporter);
+
+    const eventStream = new EventStream();
+    const csharpchannelObserver = new CsharpChannelObserver(csharpChannel);
+    const csharpLogObserver = new CsharpLoggerObserver(csharpChannel);
+    eventStream.subscribe(csharpchannelObserver.post);
+    eventStream.subscribe(csharpLogObserver.post);
 
     let platformInfo: PlatformInformation;
     try {
@@ -62,19 +60,17 @@ export async function activate(
         throw error;
     }
 
-    const aiKey = context.extension.packageJSON.contributes.debuggers[0].aiKey;
-    const reporter = new TelemetryReporter(aiKey);
-    // ensure it gets properly disposed. Upon disposal the events will be flushed.
-    context.subscriptions.push(reporter);
+    // Verify that the current platform is supported by the extension and inform the user if not.
+    if (!checkIsSupportedPlatform(context, platformInfo)) {
+        return null;
+    }
 
-    const csharpchannelObserver = new CsharpChannelObserver(csharpChannel);
-    const csharpLogObserver = new CsharpLoggerObserver(csharpChannel);
-    eventStream.subscribe(csharpchannelObserver.post);
-    eventStream.subscribe(csharpLogObserver.post);
+    await checkDotNetRuntimeExtensionVersion(context);
 
-    const requiredPackageIds: string[] = ['Debugger'];
+    await MigrateOptions(vscode);
+    const optionStream = createOptionStream(vscode);
 
-    requiredPackageIds.push('Razor');
+    const requiredPackageIds: string[] = ['Debugger', 'Razor'];
 
     const csharpDevkitExtension = getCSharpDevKit();
     const useOmnisharpServer = !csharpDevkitExtension && commonOptions.useOmnisharpServer;
@@ -82,99 +78,52 @@ export async function activate(
         requiredPackageIds.push('OmniSharp');
     }
 
-    const dotnetRuntimeExtensionId = 'ms-dotnettools.vscode-dotnet-runtime';
-    const requiredDotnetRuntimeExtensionVersion = '2.2.3';
-
-    const dotnetRuntimeExtension = vscode.extensions.getExtension(dotnetRuntimeExtensionId);
-    const dotnetRuntimeExtensionVersion = dotnetRuntimeExtension?.packageJSON.version;
-    if (lt(dotnetRuntimeExtensionVersion, requiredDotnetRuntimeExtensionVersion)) {
-        const button = vscode.l10n.t('Update and reload');
-        const prompt = vscode.l10n.t(
-            'The {0} extension requires at least {1} of the .NET Install Tool ({2}) extension. Please update to continue',
-            context.extension.packageJSON.displayName,
-            requiredDotnetRuntimeExtensionVersion,
-            dotnetRuntimeExtensionId
-        );
-        const selection = await vscode.window.showErrorMessage(prompt, button);
-        if (selection === button) {
-            await vscode.commands.executeCommand('workbench.extensions.installExtension', dotnetRuntimeExtensionId);
-            await vscode.commands.executeCommand('workbench.action.reloadWindow');
-        } else {
-            throw new Error(
-                vscode.l10n.t(
-                    'Version {0} of the .NET Install Tool ({1}) was not found, {2} will not activate.',
-                    requiredDotnetRuntimeExtensionVersion,
-                    dotnetRuntimeExtensionId,
-                    context.extension.packageJSON.displayName
-                )
-            );
-        }
-    }
-
-    // If the dotnet bundle is installed, this will ensure the dotnet CLI is on the path.
-    await initializeDotnetPath();
-
     const networkSettingsProvider = vscodeNetworkSettingsProvider(vscode);
     const useFramework = useOmnisharpServer && omnisharpOptions.useModernNet !== true;
     const installDependencies: IInstallDependencies = async (dependencies: AbsolutePathPackage[]) =>
         downloadAndInstallPackages(dependencies, networkSettingsProvider, eventStream, isValidDownload);
-    const runtimeDependenciesExist = await ensureRuntimeDependencies(
-        context.extension,
+
+    const runtimeDependenciesExist = await installRuntimeDependencies(
+        context.extension.packageJSON,
+        context.extension.extensionPath,
+        installDependencies,
         eventStream,
         platformInfo,
-        installDependencies,
         useFramework,
         requiredPackageIds
     );
 
-    let omnisharpLangServicePromise: Promise<ActivationResult> | undefined = undefined;
-    let omnisharpRazorPromise: Promise<void> | undefined = undefined;
-    const roslynLanguageServerEvents = new RoslynLanguageServerEvents();
-    context.subscriptions.push(roslynLanguageServerEvents);
-    let roslynLanguageServerStartedPromise: Promise<RoslynLanguageServer> | undefined = undefined;
-    let razorLanguageServerStartedPromise: Promise<void> | undefined = undefined;
-    let projectInitializationCompletePromise: Promise<void> | undefined = undefined;
+    const getCoreClrDebugPromise = async (languageServerStartedPromise: Promise<void>) => {
+        let coreClrDebugPromise = Promise.resolve();
+        if (runtimeDependenciesExist) {
+            // activate coreclr-debug
+            coreClrDebugPromise = coreclrdebug.activate(
+                context.extension,
+                context,
+                platformInfo,
+                eventStream,
+                csharpChannel,
+                languageServerStartedPromise
+            );
+        }
 
+        return coreClrDebugPromise;
+    };
+
+    let exports: CSharpExtensionExports | OmnisharpExtensionExports;
     if (!useOmnisharpServer) {
-        // Activate Razor. Needs to be activated before Roslyn so commands are registered in the correct order.
-        // Otherwise, if Roslyn starts up first, they could execute commands that don't yet exist on Razor's end.
-        //
-        // Flow:
-        // Razor starts up and registers dynamic file info commands ->
-        // Roslyn starts up and registers Razor-specific didOpen/didClose/didChange commands and sends request to Razor
-        //     for dynamic file info once project system is ready ->
-        // Razor sends didOpen commands to Roslyn for generated docs and responds to request with dynamic file info
-        razorLanguageServerStartedPromise = activateRazorExtension(
-            context,
-            context.extension.extensionPath,
-            eventStream,
-            csharpDevkitExtension,
-            platformInfo,
-            /* useOmnisharpServer */ false
-        );
-
-        // Setup a listener for project initialization complete before we start the server.
-        projectInitializationCompletePromise = new Promise((resolve, _) => {
-            roslynLanguageServerEvents.onServerStateChange(async (e) => {
-                if (e.state === ServerState.ProjectInitializationComplete) {
-                    resolve();
-                }
-            });
-        });
-
-        // Start the server, but do not await the completion to avoid blocking activation.
-        roslynLanguageServerStartedPromise = activateRoslynLanguageServer(
+        exports = activateRoslyn(
             context,
             platformInfo,
             optionStream,
+            eventStream,
             csharpChannel,
-            roslynLanguageServerEvents
+            reporter,
+            csharpDevkitExtension,
+            getCoreClrDebugPromise
         );
     } else {
-        // activate language services
-        const dotnetTestChannel = vscode.window.createOutputChannel(vscode.l10n.t('.NET Test Log'));
-        const dotnetChannel = vscode.window.createOutputChannel(vscode.l10n.t('.NET NuGet Restore'));
-        omnisharpLangServicePromise = activateOmniSharpLanguageServer(
+        exports = activateOmniSharp(
             context,
             platformInfo,
             optionStream,

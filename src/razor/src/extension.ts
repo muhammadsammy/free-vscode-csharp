@@ -46,10 +46,17 @@ import { RazorRenameProvider } from './rename/razorRenameProvider';
 import { SemanticTokensRangeHandler } from './semantic/semanticTokensRangeHandler';
 import { RazorSignatureHelpProvider } from './signatureHelp/razorSignatureHelpProvider';
 import { RazorSimplifyMethodHandler } from './simplify/razorSimplifyMethodHandler';
-import { TelemetryReporter as RazorTelemetryReporter } from './telemetryReporter';
-
+import TelemetryReporter from '@vscode/extension-telemetry';
+import { CSharpDevKitExports } from '../../csharpDevKitExports';
+import { DotnetRuntimeExtensionResolver } from '../../lsptoolshost/dotnetRuntime/dotnetRuntimeExtensionResolver';
+import { PlatformInformation } from '../../shared/platform';
 import { RazorLanguageServerOptions } from './razorLanguageServerOptions';
 import { resolveRazorLanguageServerOptions } from './razorLanguageServerOptionsResolver';
+import { RazorFormatNewFileHandler } from './formatNewFile/razorFormatNewFileHandler';
+import { InlayHintHandler } from './inlayHint/inlayHintHandler';
+import { InlayHintResolveHandler } from './inlayHint/inlayHintResolveHandler';
+import { getComponentPaths } from '../../lsptoolshost/extensions/builtInComponents';
+import { BlazorDebugConfigurationProvider } from './blazorDebug/blazorDebugConfigurationProvider';
 
 // We specifically need to take a reference to a particular instance of the vscode namespace,
 // otherwise providers attempt to operate on the null extension.
