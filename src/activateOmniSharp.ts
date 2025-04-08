@@ -45,7 +45,6 @@ export function activateOmniSharp(
             context,
             context.extension.extensionPath,
             eventStream,
-            reporter,
             undefined,
             platformInfo,
             /* useOmnisharpServer */ true

@@ -51,7 +51,6 @@ export function activateRoslyn(
         context,
         context.extension.extensionPath,
         eventStream,
-        reporter,
         csharpDevkitExtension,
         platformInfo,
         /* useOmnisharpServer */ false

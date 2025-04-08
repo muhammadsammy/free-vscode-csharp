@@ -65,7 +65,6 @@ export async function activateRoslynLanguageServer(
         platformInfo,
         hostExecutableResolver,
         context,
-        reporter,
         additionalExtensionPaths,
         languageServerEvents,
         _channel,

@@ -3,14 +3,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import * as vscode from 'vscode';
-import type * as vscodeapi from 'vscode';
-import type { ExtensionContext } from 'vscode';
-import type { CSharpDevKitExports } from '../../csharpDevKitExports';
-import { DotnetRuntimeExtensionResolver } from '../../lsptoolshost/dotnetRuntimeExtensionResolver';
-import type { PlatformInformation } from '../../shared/platform';
-import type { IEventEmitterFactory } from './IEventEmitterFactory';
-import { BlazorDebugConfigurationProvider } from './blazorDebug/blazorDebugConfigurationProvider';
+import * as vscodeapi from 'vscode';
+import { ExtensionContext } from 'vscode';
 import { CodeActionsHandler } from './codeActions/codeActionsHandler';
 import { CompletionHandler } from './completion/completionHandler';
 import { RazorCodeActionRunner } from './codeActions/razorCodeActionRunner';
@@ -18,7 +14,6 @@ import { RazorCodeLensProvider } from './codeLens/razorCodeLensProvider';
 import { ColorPresentationHandler } from './colorPresentation/colorPresentationHandler';
 import { RazorCSharpFeature } from './csharp/razorCSharpFeature';
 import { RazorDefinitionProvider } from './definition/razorDefinitionProvider';
-import { RazorDiagnosticHandler } from './diagnostics/razorDiagnosticHandler';
 import { ReportIssueCommand } from './diagnostics/reportIssueCommand';
 import { RazorDocumentManager } from './document/razorDocumentManager';
 import { RazorDocumentSynchronizer } from './document/razorDocumentSynchronizer';
@@ -27,14 +22,12 @@ import { RazorDocumentHighlightProvider } from './documentHighlight/razorDocumen
 import { reportTelemetryForDocuments } from './documentTelemetryListener';
 import { DynamicFileInfoHandler } from './dynamicFile/dynamicFileInfoHandler';
 import { FoldingRangeHandler } from './folding/foldingRangeHandler';
-import { RazorFormatNewFileHandler } from './formatNewFile/razorFormatNewFileHandler';
 import { FormattingHandler } from './formatting/formattingHandler';
-import type { HostEventStream } from './hostEventStream';
+import { HostEventStream } from './hostEventStream';
 import { RazorHoverProvider } from './hover/razorHoverProvider';
 import { RazorHtmlFeature } from './html/razorHtmlFeature';
+import { IEventEmitterFactory } from './IEventEmitterFactory';
 import { RazorImplementationProvider } from './implementation/razorImplementationProvider';
-import { InlayHintHandler } from './inlayHint/inlayHintHandler';
-import { InlayHintResolveHandler } from './inlayHint/inlayHintResolveHandler';
 import { ProposedApisFeature } from './proposedApisFeature';
 import { RazorLanguage } from './razorLanguage';
 import { RazorLanguageConfiguration } from './razorLanguageConfiguration';
@@ -45,8 +38,9 @@ import { RazorReferenceProvider } from './reference/razorReferenceProvider';
 import { RazorRenameProvider } from './rename/razorRenameProvider';
 import { SemanticTokensRangeHandler } from './semantic/semanticTokensRangeHandler';
 import { RazorSignatureHelpProvider } from './signatureHelp/razorSignatureHelpProvider';
+import { TelemetryReporter as RazorTelemetryReporter } from './telemetryReporter';
+import { RazorDiagnosticHandler } from './diagnostics/razorDiagnosticHandler';
 import { RazorSimplifyMethodHandler } from './simplify/razorSimplifyMethodHandler';
-import TelemetryReporter from '@vscode/extension-telemetry';
 import { CSharpDevKitExports } from '../../csharpDevKitExports';
 import { DotnetRuntimeExtensionResolver } from '../../lsptoolshost/dotnetRuntime/dotnetRuntimeExtensionResolver';
 import { PlatformInformation } from '../../shared/platform';
@@ -55,7 +49,6 @@ import { resolveRazorLanguageServerOptions } from './razorLanguageServerOptionsR
 import { RazorFormatNewFileHandler } from './formatNewFile/razorFormatNewFileHandler';
 import { InlayHintHandler } from './inlayHint/inlayHintHandler';
 import { InlayHintResolveHandler } from './inlayHint/inlayHintResolveHandler';
-import { getComponentPaths } from '../../lsptoolshost/extensions/builtInComponents';
 import { BlazorDebugConfigurationProvider } from './blazorDebug/blazorDebugConfigurationProvider';
 
 // We specifically need to take a reference to a particular instance of the vscode namespace,
@@ -103,15 +96,14 @@ export async function activate(
 
         // Set up DevKit environment for telemetry
         if (csharpDevkitExtension) {
-            await setupDevKitEnvironment(env, csharpDevkitExtension, logger);
+            await setupDevKitEnvironment(dotnetInfo.env, csharpDevkitExtension, logger);
         }
 
         const languageServerClient = new RazorLanguageServerClient(
             vscodeType,
             languageServerDir,
             razorTelemetryReporter,
-            csharpDevkitExtension !== undefined,
-            env,
+            dotnetInfo.env,
             dotnetInfo.path,
             logger
         );

@@ -27,10 +27,14 @@ import { PlatformInformation } from '../../shared/platform';
 import { readConfigurations } from '../options/configurationMiddleware';
 import { DynamicFileInfoHandler } from '../../razor/src/dynamicFile/dynamicFileInfoHandler';
 import * as RoslynProtocol from './roslynProtocol';
-import { CSharpDevKitExports } from '../csharpDevKitExports';
-import { SolutionSnapshotId } from './services/ISolutionSnapshotProvider';
-import CSharpIntelliCodeExports from '../csharpIntelliCodeExports';
-import { csharpDevkitExtensionId, csharpDevkitIntelliCodeExtensionId, getCSharpDevKit } from '../utils/getCSharpDevKit';
+import { CSharpDevKitExports } from '../../csharpDevKitExports';
+import { SolutionSnapshotId } from '../solutionSnapshot/ISolutionSnapshotProvider';
+import CSharpIntelliCodeExports from '../../csharpIntelliCodeExports';
+import {
+    csharpDevkitExtensionId,
+    csharpDevkitIntelliCodeExtensionId,
+    getCSharpDevKit,
+} from '../../utils/getCSharpDevKit';
 import { randomUUID } from 'crypto';
 import { IHostExecutableResolver } from '../../shared/constants/IHostExecutableResolver';
 import { RoslynLanguageClient } from './roslynLanguageClient';
@@ -43,27 +47,21 @@ import { registerShowToastNotification } from '../handlers/showToastNotification
 import { registerOnAutoInsert } from '../autoInsert/onAutoInsert';
 import { commonOptions, languageServerOptions, omnisharpOptions, razorOptions } from '../../shared/options';
 import { NamedPipeInformation } from './roslynProtocol';
-import { IDisposable } from '../disposable';
-import { registerNestedCodeActionCommands } from './nestedCodeAction';
-import { registerRestoreCommands } from './restore';
-import { BuildDiagnosticsService } from './buildDiagnosticsService';
-import { getComponentPaths } from './builtInComponents';
-import { OnAutoInsertFeature } from './onAutoInsertFeature';
-import { registerLanguageStatusItems } from './languageStatusBar';
-import { ProjectContextService } from './services/projectContextService';
-import { ServerState } from './serverStateChange';
-import { ProvideDynamicFileResponse } from '../razor/src/dynamicFile/provideDynamicFileResponse';
-import { ProvideDynamicFileParams } from '../razor/src/dynamicFile/provideDynamicFileParams';
-import { registerCopilotExtension } from './copilot';
+import { IDisposable } from '../../disposable';
+import { BuildDiagnosticsService } from '../diagnostics/buildDiagnosticsService';
+import { getComponentPaths } from '../extensions/builtInComponents';
+import { OnAutoInsertFeature } from '../autoInsert/onAutoInsertFeature';
+import { ProjectContextService } from '../projectContext/projectContextService';
+import { ProvideDynamicFileResponse } from '../../razor/src/dynamicFile/provideDynamicFileResponse';
+import { ProvideDynamicFileParams } from '../../razor/src/dynamicFile/provideDynamicFileParams';
 import {
     ActionOption,
     CommandOption,
     showErrorMessage,
     showInformationMessage,
-} from '../shared/observers/utils/showMessage';
-import { registerSourceGeneratedFilesContentProvider } from './sourceGeneratedFilesContentProvider';
-import { registerMiscellaneousFileNotifier } from './miscellaneousFileNotifier';
-import { RazorDynamicFileChangedParams } from '../razor/src/dynamicFile/dynamicFileUpdatedParams';
+} from '../../shared/observers/utils/showMessage';
+import { RazorDynamicFileChangedParams } from '../../razor/src/dynamicFile/dynamicFileUpdatedParams';
+import { getProfilingEnvVars } from '../profiling/profiling';
 import { isString } from '../utils/isString';
 import { getServerPath } from '../activate';
 import { UriConverter } from '../utils/uriConverter';
@@ -71,9 +69,6 @@ import {
     copilotLanguageServerExtensionAssemblyName,
     copilotLanguageServerExtensionComponentName,
 } from '../copilot/contextProviders';
-
-let _channel: vscode.LogOutputChannel;
-let _traceChannel: vscode.OutputChannel;
 
 // Flag indicating if C# Devkit was installed the last time we activated.
 // Used to determine if we need to restart the server on extension changes.
@@ -120,7 +115,8 @@ export class RoslynLanguageServer {
         private _languageClient: RoslynLanguageClient,
         private _platformInfo: PlatformInformation,
         private _context: vscode.ExtensionContext,
-        private _languageServerEvents: RoslynLanguageServerEvents
+        private _languageServerEvents: RoslynLanguageServerEvents,
+        private _channel: vscode.LogOutputChannel
     ) {
         this.registerSetTrace();
         this.registerSendOpenSolution();
@@ -186,7 +182,6 @@ export class RoslynLanguageServer {
                     state: ServerState.Started,
                     workspaceLabel: this.workspaceDisplayName(),
                 });
-                this._telemetryReporter.sendTelemetryEvent(TelemetryEventNames.ClientServerReady);
             } else if (state.newState === State.Stopped) {
                 this._languageServerEvents.onServerStateChangeEmitter.fire({
                     state: ServerState.Stopped,
@@ -254,7 +249,13 @@ export class RoslynLanguageServer {
         }
 
         const serverOptions: ServerOptions = async () => {
-            return await this.startServer(platformInfo, hostExecutableResolver, context, additionalExtensionPaths);
+            return await this.startServer(
+                platformInfo,
+                hostExecutableResolver,
+                context,
+                additionalExtensionPaths,
+                channel
+            );
         };
 
         const documentSelector = languageServerOptions.documentSelector;
@@ -296,7 +297,8 @@ export class RoslynLanguageServer {
 
         client.registerProposedFeatures();
 
-        const server = new RoslynLanguageServer(client, platformInfo, context, languageServerEvents);
+        const server = new RoslynLanguageServer(client, platformInfo, context, languageServerEvents, channel);
+
         client.registerFeature(server._onAutoInsertFeature);
 
         // Start the client. This will also launch the server process.
@@ -564,13 +566,14 @@ export class RoslynLanguageServer {
         platformInfo: PlatformInformation,
         hostExecutableResolver: IHostExecutableResolver,
         context: vscode.ExtensionContext,
-        additionalExtensionPaths: string[]
+        additionalExtensionPaths: string[],
+        channel: vscode.LogOutputChannel
     ): Promise<MessageTransports> {
         const serverPath = getServerPath(platformInfo);
 
         const dotnetInfo = await hostExecutableResolver.getHostExecutableInfo();
         const dotnetExecutablePath = dotnetInfo.path;
-        _channel.info('Dotnet path: ' + dotnetExecutablePath);
+        channel.info('Dotnet path: ' + dotnetExecutablePath);
 
         let args: string[] = [];
 
@@ -1077,130 +1080,6 @@ export class RoslynLanguageServer {
 
         throw new Error('Unable to retrieve build-only diagnostic ids for current solution.');
     }
-}
-
-/**
- * Creates and activates the Roslyn language server.
- * The returned promise will complete when the server starts.
- */
-export async function activateRoslynLanguageServer(
-    context: vscode.ExtensionContext,
-    platformInfo: PlatformInformation,
-    optionObservable: Observable<void>,
-    outputChannel: vscode.LogOutputChannel,
-    languageServerEvents: RoslynLanguageServerEvents
-): Promise<RoslynLanguageServer> {
-    // Create a channel for outputting general logs from the language server.
-    _channel = outputChannel;
-    // Create a separate channel for outputting trace logs - these are incredibly verbose and make other logs very difficult to see.
-    // The trace channel verbosity is controlled by the _channel verbosity.
-    _traceChannel = vscode.window.createOutputChannel(vscode.l10n.t('C# LSP Trace Logs'));
-
-    const hostExecutableResolver = new DotnetRuntimeExtensionResolver(
-        platformInfo,
-        getServerPath,
-        outputChannel,
-        context.extensionPath
-    );
-    const additionalExtensionPaths = scanExtensionPlugins();
-
-    const languageServer = await RoslynLanguageServer.initializeAsync(
-        platformInfo,
-        hostExecutableResolver,
-        context,
-        additionalExtensionPaths,
-        languageServerEvents
-    );
-
-    registerLanguageStatusItems(context, languageServer, languageServerEvents);
-    registerMiscellaneousFileNotifier(context, languageServer);
-    registerCopilotExtension(languageServer, _channel);
-
-    // Register any commands that need to be handled by the extension.
-    registerCommands(context, languageServer, hostExecutableResolver, _channel);
-    registerNestedCodeActionCommands(context, languageServer, _channel);
-    registerCodeActionFixAllCommands(context, languageServer, _channel);
-
-    registerRazorCommands(context, languageServer);
-
-    registerUnitTestingCommands(context, languageServer);
-
-    // Register any needed debugger components that need to communicate with the language server.
-    registerDebugger(context, languageServer, languageServerEvents, platformInfo, _channel);
-
-    registerRestoreCommands(context, languageServer);
-
-    registerSourceGeneratedFilesContentProvider(context, languageServer);
-
-    context.subscriptions.push(registerLanguageServerOptionChanges(optionObservable));
-
-    return languageServer;
-
-    function scanExtensionPlugins(): string[] {
-        const extensionsFromPackageJson = vscode.extensions.all.flatMap((extension) => {
-            let loadPaths = extension.packageJSON.contributes?.['csharpExtensionLoadPaths'];
-            if (loadPaths === undefined || loadPaths === null) {
-                _channel.debug(`Extension ${extension.id} does not contribute csharpExtensionLoadPaths`);
-                return [];
-            }
-
-            if (!Array.isArray(loadPaths) || loadPaths.some((loadPath) => typeof loadPath !== 'string')) {
-                _channel.warn(
-                    `Extension ${extension.id} has invalid csharpExtensionLoadPaths. Expected string array, found ${loadPaths}`
-                );
-                return [];
-            }
-
-            loadPaths = loadPaths.map((loadPath) => path.join(extension.extensionPath, loadPath));
-            _channel.trace(`Extension ${extension.id} contributes csharpExtensionLoadPaths: ${loadPaths}`);
-            return loadPaths;
-        });
-        const extensionsFromOptions = languageServerOptions.extensionsPaths ?? [];
-        return extensionsFromPackageJson.concat(extensionsFromOptions);
-    }
-}
-
-function getServerPath(platformInfo: PlatformInformation) {
-    let serverPath = process.env.DOTNET_ROSLYN_SERVER_PATH;
-
-    if (serverPath) {
-        _channel.appendLine(`Using server path override from DOTNET_ROSLYN_SERVER_PATH: ${serverPath}`);
-    } else {
-        serverPath = commonOptions.serverPath;
-        if (!serverPath) {
-            // Option not set, use the path from the extension.
-            serverPath = getInstalledServerPath(platformInfo);
-        }
-    }
-
-    if (!fs.existsSync(serverPath)) {
-        throw new Error(`Cannot find language server in path '${serverPath}'`);
-    }
-
-    return serverPath;
-}
-
-function getInstalledServerPath(platformInfo: PlatformInformation): string {
-    const clientRoot = __dirname;
-    const serverFilePath = path.join(clientRoot, '..', '.roslyn', 'Microsoft.CodeAnalysis.LanguageServer');
-
-    let extension = '';
-    if (platformInfo.isWindows()) {
-        extension = '.exe';
-    } else if (platformInfo.isMacOS()) {
-        // MacOS executables must be signed with codesign.  Currently all Roslyn server executables are built on windows
-        // and therefore dotnet publish does not automatically sign them.
-        // Tracking bug - https://devdiv.visualstudio.com/DevDiv/_workitems/edit/1767519/
-        extension = '.dll';
-    }
-
-    let pathWithExtension = `${serverFilePath}${extension}`;
-    if (!fs.existsSync(pathWithExtension)) {
-        // We might be running a platform neutral vsix which has no executable, instead we run the dll directly.
-        pathWithExtension = `${serverFilePath}.dll`;
-    }
-
-    return pathWithExtension;
 }
 
 // VS code will have a default session id when running under tests. Since we may still
