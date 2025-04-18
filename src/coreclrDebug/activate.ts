@@ -21,7 +21,6 @@ import CompositeDisposable from '../compositeDisposable';
 import { BaseVsDbgConfigurationProvider } from '../shared/configurationProvider';
 import { omnisharpOptions } from '../shared/options';
 import { ActionOption, showErrorMessage } from '../shared/observers/utils/showMessage';
-import { getCSharpDevKit } from '../utils/getCSharpDevKit';
 import { Command } from 'vscode-languageserver-types';
 
 export async function activate(
