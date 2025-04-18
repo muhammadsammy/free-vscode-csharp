@@ -52,8 +52,8 @@ module.exports = {
         "out/",
         "dist/",
         "wallaby.js",
-        "webpack.config.js",
         ".eslintrc.js",
+        "esbuild.js",
         "**/*.d.ts"
     ],
 };
