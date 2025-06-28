@@ -11,6 +11,7 @@ import * as Razor from '../../src/razor/src/extension';
 import { EventStream } from '../eventStream';
 import { PlatformInformation } from '../shared/platform';
 import { showWarningMessage } from '../shared/observers/utils/showMessage';
+import { RazorLogger } from './src/razorLogger';
 
 export async function activateRazorExtension(
     context: vscode.ExtensionContext,
@@ -18,7 +19,8 @@ export async function activateRazorExtension(
     eventStream: EventStream,
     csharpDevkitExtension: vscode.Extension<any> | undefined,
     platformInfo: PlatformInformation,
-    useOmnisharpServer: boolean
+    useOmnisharpServer: boolean,
+    logger: RazorLogger
 ) {
     const razorConfig = vscode.workspace.getConfiguration('razor');
     const configuredLanguageServerDir = razorConfig.get<string>('languageServer.directory', '');
@@ -46,6 +48,7 @@ export async function activateRazorExtension(
                 eventStream,
                 csharpDevkitExtension,
                 platformInfo,
+                logger,
                 /* enableProposedApis: */ false
             );
         }

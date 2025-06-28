@@ -1,7 +1,7 @@
 {
   "name": "csharp",
   "publisher": "muhammad-sammy",
-  "version": "2.72.27",
+  "version": "2.80.16",
   "description": "Free/Libre C# support for vscode-compatible editors.",
   "displayName": "C#",
   "author": "Muhammad Sammy",
@@ -36,12 +36,15 @@
       "supported": false
     }
   },
+  "extensionKind": [
+    "workspace"
+  ],
   "defaults": {
-    "roslyn": "4.14.0-3.25178.1",
+    "roslyn": "5.0.0-1.25266.2",
     "omniSharp": "1.39.12",
-    "razor": "9.0.0-preview.25177.4",
+    "razor": "10.0.0-preview.25262.1",
     "razorOmnisharp": "7.0.0-preview.23363.1",
-    "xamlTools": "17.14.35913.250"
+    "xamlTools": "17.14.36106.43"
   },
   "main": "./dist/extension",
   "l10n": "./l10n",
@@ -1458,6 +1461,14 @@
             "default": true,
             "description": "%configuration.dotnet.projects.enableAutomaticRestore%"
           },
+          "dotnet.projects.enableFileBasedPrograms": {
+            "type": "boolean",
+            "default": false,
+            "description": "%configuration.dotnet.projects.enableFileBasedPrograms%",
+            "tags": [
+              "preview"
+            ]
+          },
           "razor.languageServer.directory": {
             "type": "string",
             "scope": "machine-overridable",
@@ -1474,9 +1485,12 @@
           "razor.languageServer.forceRuntimeCodeGeneration": {
             "type": "boolean",
             "scope": "machine-overridable",
-            "default": null,
+            "default": true,
             "description": "%configuration.razor.languageServer.forceRuntimeCodeGeneration%",
-            "order": 90
+            "order": 90,
+            "tags": [
+              "experimental"
+            ]
           },
           "razor.languageServer.suppressLspErrorToasts": {
             "type": "boolean",
@@ -1487,6 +1501,14 @@
             "type": "boolean",
             "default": true,
             "description": "%configuration.razor.languageServer.useNewFormattingEngine%"
+          },
+          "razor.languageServer.cohostingEnabled": {
+            "type": "boolean",
+            "default": false,
+            "description": "%configuration.razor.languageServer.cohostingEnabled%",
+            "tags": [
+              "experimental"
+            ]
           }
         }
       },
@@ -1659,12 +1681,18 @@
           "omnisharp.enableLspDriver": {
             "type": "boolean",
             "default": false,
-            "description": "%configuration.omnisharp.enableLspDriver%"
+            "description": "%configuration.omnisharp.enableLspDriver%",
+            "tags": [
+              "experimental"
+            ]
           },
           "omnisharp.enableAsyncCompletion": {
             "type": "boolean",
             "default": false,
-            "description": "%configuration.omnisharp.enableAsyncCompletion%"
+            "description": "%configuration.omnisharp.enableAsyncCompletion%",
+            "tags": [
+              "experimental"
+            ]
           },
           "omnisharp.dotNetCliPaths": {
             "type": "array",
@@ -1779,7 +1807,7 @@
         "command": "dotnet.generateAssets",
         "title": "%command.dotnet.generateAssets.currentProject%",
         "category": ".NET",
-        "enablement": "dotnet.server.activationContext == 'Roslyn' || dotnet.server.activationContext == 'OmniSharp'"
+        "enablement": "dotnet.server.activationContext == 'RoslynDevKit' || dotnet.server.activationContext == 'Roslyn' || dotnet.server.activationContext == 'OmniSharp'"
       },
       {
         "command": "dotnet.restore.project",
@@ -1827,12 +1855,14 @@
       {
         "command": "extension.showRazorCSharpWindow",
         "title": "%command.extension.showRazorCSharpWindow%",
-        "category": "Razor"
+        "category": "Razor",
+        "enablement": "razor.mode == 'lsp'"
       },
       {
         "command": "extension.showRazorHtmlWindow",
         "title": "%command.extension.showRazorHtmlWindow%",
-        "category": "Razor"
+        "category": "Razor",
+        "enablement": "razor.mode == 'lsp'"
       },
       {
         "command": "razor.reportIssue",
@@ -5529,6 +5559,9 @@
     "configurationDefaults": {
       "[xaml]": {
         "editor.wordBasedSuggestions": "off"
+      },
+      "[csharp]": {
+        "editor.formatOnType": true
       }
     }
   }
