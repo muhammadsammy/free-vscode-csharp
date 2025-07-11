@@ -1,7 +1,7 @@
 {
   "name": "csharp",
   "publisher": "muhammad-sammy",
-  "version": "2.80.16",
+  "version": "2.84.19",
   "description": "Free/Libre C# support for vscode-compatible editors.",
   "displayName": "C#",
   "author": "Muhammad Sammy",
@@ -40,9 +40,9 @@
     "workspace"
   ],
   "defaults": {
-    "roslyn": "5.0.0-1.25266.2",
+    "roslyn": "5.0.0-1.25319.11",
     "omniSharp": "1.39.12",
-    "razor": "10.0.0-preview.25262.1",
+    "razor": "10.0.0-preview.25322.1",
     "razorOmnisharp": "7.0.0-preview.23363.1",
     "xamlTools": "17.14.36106.43"
   },
@@ -1851,6 +1851,12 @@
         "title": "%command.csharp.showDecompilationTerms%",
         "category": "CSharp",
         "enablement": "dotnet.server.activationContext == 'OmniSharp'"
+      },
+      {
+        "command": "csharp.recordTrace",
+        "title": "%command.csharp.recordTrace%",
+        "category": "CSharp",
+        "enablement": "dotnet.server.activationContext == 'Roslyn' || dotnet.server.activationContext == 'RoslynDevKit'"
       },
       {
         "command": "extension.showRazorCSharpWindow",
