@@ -76,6 +76,9 @@ export async function activate(
     if (useOmnisharpServer) {
         requiredPackageIds.push('OmniSharp');
     }
+    if (csharpDevkitExtension) {
+        requiredPackageIds.push('RoslynCopilot');
+    }
 
     const networkSettingsProvider = vscodeNetworkSettingsProvider(vscode);
     const useFramework = useOmnisharpServer && omnisharpOptions.useModernNet !== true;
