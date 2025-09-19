@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as cp from 'child_process';
-import del from 'del';
 import * as fs from 'fs';
 import * as fsextra from 'fs-extra';
 import * as gulp from 'gulp';
@@ -141,12 +140,7 @@ gulp.task('vsix:release:neutral', async () => {
 
 gulp.task(
     'vsix:release:package',
-    gulp.series(
-        'vsix:release:package:windows',
-        'vsix:release:package:linux',
-        'vsix:release:package:darwin',
-        'vsix:release:package:neutral'
-    )
+    gulp.series('vsix:release:package:windows', 'vsix:release:package:linux', 'vsix:release:package:darwin')
 );
 
 // Downloads dependencies for local development.
@@ -399,7 +393,9 @@ async function cleanAsync() {
         directoriesToDelete.push(allNugetPackages[key].vsixOutputPath);
     }
 
-    await del(directoriesToDelete);
+    for (const directory of directoriesToDelete) {
+        await fsextra.remove(directory);
+    }
 }
 
 async function buildVsix(packageJSON: any, outputFolder: string, prerelease: boolean, platformInfo?: VSIXPlatformInfo) {

@@ -21,17 +21,19 @@ import IInstallDependencies from './packageManager/IInstallDependencies';
 import { installRuntimeDependencies } from './installRuntimeDependencies';
 import { isValidDownload } from './packageManager/isValidDownload';
 import { MigrateOptions } from './shared/migrateOptions';
-import { CSharpExtensionExports, OmnisharpExtensionExports } from './csharpExtensionExports';
+import { CSharpExtensionExports, LimitedExtensionExports, OmnisharpExtensionExports } from './csharpExtensionExports';
 import { getCSharpDevKit } from './utils/getCSharpDevKit';
 import { commonOptions, omnisharpOptions } from './shared/options';
 import { checkDotNetRuntimeExtensionVersion } from './checkDotNetRuntimeExtensionVersion';
 import { checkIsSupportedPlatform } from './checkSupportedPlatform';
 import { activateOmniSharp } from './activateOmniSharp';
 import { activateRoslyn } from './activateRoslyn';
+import { CommandOption, showInformationMessage } from './shared/observers/utils/showMessage';
+import { LimitedActivationStatus } from './shared/limitedActivationStatus';
 
 export async function activate(
     context: vscode.ExtensionContext
-): Promise<CSharpExtensionExports | OmnisharpExtensionExports | null> {
+): Promise<CSharpExtensionExports | OmnisharpExtensionExports | LimitedExtensionExports | null> {
     // Start measuring the activation time
     const startActivation = process.hrtime();
 
@@ -95,46 +97,63 @@ export async function activate(
         requiredPackageIds
     );
 
-    const getCoreClrDebugPromise = async (languageServerStartedPromise: Promise<void>) => {
-        let coreClrDebugPromise = Promise.resolve();
-        if (runtimeDependenciesExist) {
-            // activate coreclr-debug
-            coreClrDebugPromise = coreclrdebug.activate(
-                context.extension,
-                context,
-                platformInfo,
-                eventStream,
-                csharpChannel,
-                languageServerStartedPromise
-            );
-        }
-
-        return coreClrDebugPromise;
-    };
-
-    let exports: CSharpExtensionExports | OmnisharpExtensionExports;
-    if (!useOmnisharpServer) {
-        exports = activateRoslyn(
-            context,
-            platformInfo,
-            optionStream,
-            eventStream,
-            csharpChannel,
-            reporter,
-            csharpDevkitExtension,
-            getCoreClrDebugPromise
+    let exports: CSharpExtensionExports | OmnisharpExtensionExports | LimitedExtensionExports;
+    if (vscode.workspace.isTrusted !== true) {
+        await vscode.commands.executeCommand('setContext', 'dotnet.server.activationContext', 'Limited');
+        exports = { isLimitedActivation: true };
+        csharpChannel.info('C# Extension activated in limited mode due to workspace trust not being granted.');
+        LimitedActivationStatus.createStatusItem(context);
+        context.subscriptions.push(
+            vscode.workspace.onDidGrantWorkspaceTrust(() => {
+                const reloadTitle: CommandOption = {
+                    title: vscode.l10n.t('Reload Extensions'),
+                    command: 'workbench.action.restartExtensionHost',
+                };
+                const message = vscode.l10n.t('Workspace trust has changed. Would you like to reload extensions?');
+                showInformationMessage(vscode, message, reloadTitle);
+            })
         );
     } else {
-        exports = activateOmniSharp(
-            context,
-            platformInfo,
-            optionStream,
-            networkSettingsProvider,
-            eventStream,
-            csharpChannel,
-            reporter,
-            getCoreClrDebugPromise
-        );
+        const getCoreClrDebugPromise = async (languageServerStartedPromise: Promise<void>) => {
+            let coreClrDebugPromise = Promise.resolve();
+            if (runtimeDependenciesExist) {
+                // activate coreclr-debug
+                coreClrDebugPromise = coreclrdebug.activate(
+                    context.extension,
+                    context,
+                    platformInfo,
+                    eventStream,
+                    csharpChannel,
+                    languageServerStartedPromise
+                );
+            }
+
+            return coreClrDebugPromise;
+        };
+
+        if (!useOmnisharpServer) {
+            exports = activateRoslyn(
+                context,
+                platformInfo,
+                optionStream,
+                eventStream,
+                csharpChannel,
+                reporter,
+                csharpDevkitExtension,
+                getCoreClrDebugPromise
+            );
+        } else {
+            exports = activateOmniSharp(
+                context,
+                platformInfo,
+                optionStream,
+                networkSettingsProvider,
+                eventStream,
+                csharpChannel,
+                reporter,
+                getCoreClrDebugPromise
+            );
+        }
     }
 
     const timeTaken = process.hrtime(startActivation);
