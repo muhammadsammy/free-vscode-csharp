@@ -112,6 +112,7 @@
     "stream": "0.0.2",
     "strip-bom": "5.0.0",
     "strip-bom-buf": "2.0.0",
+    "tar": "^7.4.3",
     "tmp": "0.0.33",
     "uuid": "^9.0.0",
     "vscode-html-languageservice": "^5.3.1",
