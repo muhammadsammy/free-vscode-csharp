@@ -1,7 +1,7 @@
 {
   "name": "csharp",
   "publisher": "muhammad-sammy",
-  "version": "2.90.60",
+  "version": "2.93.22",
   "description": "Free/Libre C# support for vscode-compatible editors.",
   "displayName": "C#",
   "author": "Muhammad Sammy",
@@ -40,9 +40,9 @@
     "workspace"
   ],
   "defaults": {
-    "roslyn": "5.0.0-2.25428.10",
+    "roslyn": "5.0.0-2.25472.11",
     "omniSharp": "1.39.14",
-    "razor": "10.0.0-preview.25424.9",
+    "razor": "10.0.0-preview.25472.6",
     "razorOmnisharp": "7.0.0-preview.23363.1",
     "xamlTools": "17.14.36106.43"
   },
@@ -135,7 +135,7 @@
     "@types/tar": "6.1.5",
     "@types/tmp": "0.0.33",
     "@types/uuid": "^9.0.1",
-    "@types/vscode": "1.93.0",
+    "@types/vscode": "1.98.0",
     "@types/yauzl": "2.10.0",
     "@typescript-eslint/eslint-plugin": "^8.19.0",
     "@typescript-eslint/parser": "^8.19.0",
@@ -412,7 +412,7 @@
     {
       "id": "RoslynCopilot",
       "description": "Language server for Roslyn Copilot integration",
-      "url": "https://roslyn.blob.core.windows.net/releases/Microsoft.VisualStudio.Copilot.Roslyn.LanguageServer-18.0.479-alpha.zip",
+      "url": "https://roslyn.blob.core.windows.net/releases/Microsoft.VisualStudio.Copilot.Roslyn.LanguageServer-18.0.743-alpha.zip",
       "installPath": ".roslynCopilot",
       "platforms": [
         "neutral"
@@ -421,7 +421,7 @@
         "neutral"
       ],
       "installTestPath": "./.roslynCopilot/Microsoft.VisualStudio.Copilot.Roslyn.LanguageServer.dll",
-      "integrity": "1D16E555AEFB581F6090D66A20FA5B3DD367EFA0D33BC97EF176285F60E02FEF"
+      "integrity": "94F87755F5AA90B578E06A8C91DFAA0F99BBE58B147A53BA8C53CEFA07374583"
     },
     {
       "id": "Debugger",
@@ -647,7 +647,7 @@
     }
   ],
   "engines": {
-    "vscode": "^1.93.0"
+    "vscode": "^1.98.0"
   },
   "activationEvents": [
     "onDebugInitialConfigurations",
@@ -1490,11 +1490,6 @@
             "default": true,
             "description": "%configuration.razor.languageServer.suppressLspErrorToasts%"
           },
-          "razor.languageServer.useNewFormattingEngine": {
-            "type": "boolean",
-            "default": true,
-            "description": "%configuration.razor.languageServer.useNewFormattingEngine%"
-          },
           "razor.languageServer.cohostingEnabled": {
             "type": "boolean",
             "default": true,
@@ -1860,13 +1855,13 @@
         "command": "extension.showRazorCSharpWindow",
         "title": "%command.extension.showRazorCSharpWindow%",
         "category": "Razor",
-        "enablement": "isWorkspaceTrusted && razor.mode == 'lsp'"
+        "enablement": "isWorkspaceTrusted"
       },
       {
         "command": "extension.showRazorHtmlWindow",
         "title": "%command.extension.showRazorHtmlWindow%",
         "category": "Razor",
-        "enablement": "isWorkspaceTrusted && razor.mode == 'lsp'"
+        "enablement": "isWorkspaceTrusted"
       },
       {
         "command": "razor.reportIssue",
@@ -5579,6 +5574,7 @@
         "*.json": "${capture}.Development.json",
         "*.cshtml": "${capture}.cshtml.cs,${capture}.cshtml.css",
         "*.razor": "${capture}.razor.cs,${capture}.razor.css",
+        "*.resx": "${capture}.Designer.cs",
         "*.xaml": "${capture}.xaml.cs"
       }
     }

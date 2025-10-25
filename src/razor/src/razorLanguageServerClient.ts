@@ -263,11 +263,6 @@ export class RazorLanguageServerClient implements vscode.Disposable {
             args.push('true');
             args.push('--SingleServerCompletionSupport');
             args.push('true');
-
-            if (options.useNewFormattingEngine) {
-                args.push('--UseNewFormattingEngine');
-                args.push('true');
-            }
         }
 
         let childProcess: () => Promise<cp.ChildProcessWithoutNullStreams>;
