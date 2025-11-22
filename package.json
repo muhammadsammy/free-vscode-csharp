@@ -40,11 +40,11 @@
     "workspace"
   ],
   "defaults": {
-    "roslyn": "5.0.0-2.25472.11",
+    "roslyn": "5.3.0-2.25553.6",
     "omniSharp": "1.39.14",
-    "razor": "10.0.0-preview.25472.6",
+    "razor": "10.0.0-preview.25552.2",
     "razorOmnisharp": "7.0.0-preview.23363.1",
-    "xamlTools": "17.14.36106.43"
+    "xamlTools": "18.3.11128.18"
   },
   "main": "./dist/extension",
   "l10n": "./l10n",
@@ -116,9 +116,9 @@
     "tmp": "0.0.33",
     "uuid": "^9.0.0",
     "vscode-html-languageservice": "^5.3.1",
-    "vscode-jsonrpc": "9.0.0-next.8",
-    "vscode-languageclient": "10.0.0-next.15",
-    "vscode-languageserver-protocol": "3.17.6-next.13",
+    "vscode-jsonrpc": "9.0.0-next.10",
+    "vscode-languageclient": "10.0.0-next.18",
+    "vscode-languageserver-protocol": "3.17.6-next.15",
     "vscode-languageserver-textdocument": "1.0.12",
     "vscode-languageserver-types": "3.17.6-next.6",
     "vscode-nls": "5.0.1",
@@ -412,7 +412,7 @@
     {
       "id": "RoslynCopilot",
       "description": "Language server for Roslyn Copilot integration",
-      "url": "https://roslyn.blob.core.windows.net/releases/Microsoft.VisualStudio.Copilot.Roslyn.LanguageServer-18.0.743-alpha.zip",
+      "url": "https://roslyn.blob.core.windows.net/releases/Microsoft.VisualStudio.Copilot.Roslyn.LanguageServer-18.3.72-alpha.zip",
       "installPath": ".roslynCopilot",
       "platforms": [
         "neutral"
@@ -421,7 +421,7 @@
         "neutral"
       ],
       "installTestPath": "./.roslynCopilot/Microsoft.VisualStudio.Copilot.Roslyn.LanguageServer.dll",
-      "integrity": "94F87755F5AA90B578E06A8C91DFAA0F99BBE58B147A53BA8C53CEFA07374583"
+      "integrity": "8F2F8B686D7E2FFD8E7C9AD980C5DE8FD1F0A6CFB5B6B1E13024EF6501E63D8E"
     },
     {
       "id": "Debugger",
@@ -647,7 +647,7 @@
     }
   ],
   "engines": {
-    "vscode": "^1.98.0"
+    "vscode": "^1.106.0"
   },
   "activationEvents": [
     "onDebugInitialConfigurations",
@@ -677,6 +677,7 @@
     "configuration": [
       {
         "title": "Project",
+        "id": "ms-dotnettools.csharp.project",
         "order": 0,
         "properties": {
           "dotnet.defaultSolution": {
@@ -688,6 +689,7 @@
       },
       {
         "title": "Text Editor",
+        "id": "ms-dotnettools.csharp.textEditor",
         "order": 1,
         "properties": {
           "dotnet.autoInsert.enableAutoInsert": {
@@ -912,6 +914,7 @@
       },
       {
         "title": "Debugger",
+        "id": "ms-dotnettools.csharp.debugger",
         "order": 8,
         "properties": {
           "csharp.debug.stopAtEntry": {
@@ -1370,6 +1373,7 @@
       },
       {
         "title": "LSP Server",
+        "id": "ms-dotnettools.csharp.lspServer",
         "order": 9,
         "properties": {
           "dotnet.preferCSharpExtension": {
@@ -1397,6 +1401,14 @@
               },
               "roslynCopilot": {
                 "description": "%configuration.dotnet.server.componentPaths.roslynCopilot%",
+                "type": "string"
+              },
+              "razorExtension": {
+                "description": "%configuration.dotnet.server.componentPaths.razorExtension%",
+                "type": "string"
+              },
+              "razorDevKit": {
+                "description": "%configuration.dotnet.server.componentPaths.razorDevKit%",
                 "type": "string"
               }
             },
@@ -1466,7 +1478,7 @@
           },
           "dotnet.projects.enableFileBasedPrograms": {
             "type": "boolean",
-            "default": true,
+            "default": false,
             "description": "%configuration.dotnet.projects.enableFileBasedPrograms%",
             "tags": [
               "preview"
@@ -1502,6 +1514,7 @@
       },
       {
         "title": "OmniSharp",
+        "id": "ms-dotnettools.csharp.omniSharp",
         "order": 10,
         "properties": {
           "dotnet.server.useOmnisharp": {
@@ -5564,9 +5577,6 @@
     "configurationDefaults": {
       "[xaml]": {
         "editor.wordBasedSuggestions": "off"
-      },
-      "[csharp]": {
-        "editor.formatOnType": true
       },
       "explorer.fileNesting.patterns": {
         "*.cs": "${capture}.designer.cs,${capture}.g.cs,${capture}.generated.cs,${capture}.run.json,${capture}.settings.json,${capture}.settings.*.json",

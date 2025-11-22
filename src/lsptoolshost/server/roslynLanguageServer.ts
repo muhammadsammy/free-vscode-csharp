@@ -634,7 +634,7 @@ export class RoslynLanguageServer {
                 : razorOptions.razorServerPath;
 
         let razorComponentPath = '';
-        getComponentPaths('razorExtension', languageServerOptions).forEach((extPath) => {
+        getComponentPaths('razorExtension', languageServerOptions, channel).forEach((extPath) => {
             additionalExtensionPaths.push(extPath);
             razorComponentPath = path.dirname(extPath);
         });
@@ -678,10 +678,10 @@ export class RoslynLanguageServer {
             // Set command enablement as soon as we know devkit is available.
             await vscode.commands.executeCommand('setContext', 'dotnet.server.activationContext', 'RoslynDevKit');
 
-            const csharpDevKitArgs = this.getCSharpDevKitExportArgs(additionalExtensionPaths);
+            const csharpDevKitArgs = this.getCSharpDevKitExportArgs(additionalExtensionPaths, channel);
             args = args.concat(csharpDevKitArgs);
 
-            await this.setupDevKitEnvironment(dotnetInfo.env, csharpDevkitExtension, additionalExtensionPaths);
+            await this.setupDevKitEnvironment(dotnetInfo.env, csharpDevkitExtension, additionalExtensionPaths, channel);
         } else {
             // C# Dev Kit is not installed - continue C#-only activation.
             channel.info('Activating C# standalone...');
@@ -986,10 +986,13 @@ export class RoslynLanguageServer {
         );
     }
 
-    private static getCSharpDevKitExportArgs(additionalExtensionPaths: string[]): string[] {
+    private static getCSharpDevKitExportArgs(
+        additionalExtensionPaths: string[],
+        channel: vscode.LogOutputChannel
+    ): string[] {
         const args: string[] = [];
 
-        const devKitDepsPath = getComponentPaths('roslynDevKit', languageServerOptions);
+        const devKitDepsPath = getComponentPaths('roslynDevKit', languageServerOptions, channel);
         if (devKitDepsPath.length > 1) {
             throw new Error('Expected only one devkit deps path');
         }
@@ -1000,7 +1003,7 @@ export class RoslynLanguageServer {
 
         // Also include the Xaml Dev Kit extensions, if enabled.
         if (languageServerOptions.enableXamlTools) {
-            getComponentPaths('xamlTools', languageServerOptions).forEach((path) =>
+            getComponentPaths('xamlTools', languageServerOptions, channel).forEach((path) =>
                 additionalExtensionPaths.push(path)
             );
         }
@@ -1060,7 +1063,8 @@ export class RoslynLanguageServer {
     private static async setupDevKitEnvironment(
         env: NodeJS.ProcessEnv,
         csharpDevkitExtension: vscode.Extension<CSharpDevKitExports>,
-        additionalExtensionPaths: string[]
+        additionalExtensionPaths: string[],
+        channel: vscode.LogOutputChannel
     ): Promise<void> {
         const exports: CSharpDevKitExports = await csharpDevkitExtension.activate();
 
@@ -1070,7 +1074,7 @@ export class RoslynLanguageServer {
             await exports.setupTelemetryEnvironmentAsync(env);
         }
 
-        getComponentPaths('roslynCopilot', languageServerOptions).forEach((extPath) => {
+        getComponentPaths('roslynCopilot', languageServerOptions, channel).forEach((extPath) => {
             additionalExtensionPaths.push(extPath);
         });
     }
