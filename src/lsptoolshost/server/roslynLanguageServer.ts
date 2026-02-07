@@ -321,14 +321,7 @@ export class RoslynLanguageServer {
 
         client.registerProposedFeatures();
 
-        server = new RoslynLanguageServer(
-            client,
-            platformInfo,
-            context,
-            languageServerEvents,
-            channel,
-            traceChannel
-        );
+        server = new RoslynLanguageServer(client, platformInfo, context, languageServerEvents, channel, traceChannel);
 
         client.registerFeature(server._onAutoInsertFeature);
         client.registerFeature(server._projectContextFeature);
