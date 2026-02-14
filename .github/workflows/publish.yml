@@ -38,7 +38,7 @@ jobs:
       run: npm run vscode:prepublish
 
     - name: Build VSIX
-      run: gulp 'vsix:release:neutral'
+      run: gulp 'vsix:release:package'
 
     - name: Publish to Open-VSX
       run: ovsx publish --packagePath $(find . -iname *.vsix) -p ${{ secrets.OPEN_VSX_TOKEN }}
