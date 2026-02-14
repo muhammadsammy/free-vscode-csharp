@@ -49,7 +49,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./vsix/csharp-darwin-x64-*.vsix
+        asset_path: ./vsix/csharp-darwin-x64-${{ env.VERSION }}.vsix
         asset_name: csharp-darwin-x64-${{ env.VERSION }}.vsix
         asset_content_type: application/zip
 
@@ -60,7 +60,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./vsix/csharp-linux-x64-*.vsix
+        asset_path: ./vsix/csharp-linux-x64-${{ env.VERSION }}.vsix
         asset_name: csharp-linux-x64-${{ env.VERSION }}.vsix
         asset_content_type: application/zip
 
@@ -71,6 +71,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./vsix/csharp-win32-x64-*.vsix
+        asset_path: ./vsix/csharp-win32-x64-${{ env.VERSION }}.vsix
         asset_name: csharp-win32-x64-${{ env.VERSION }}.vsix
         asset_content_type: application/zip
