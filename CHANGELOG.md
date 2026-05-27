@@ -3,6 +3,278 @@
 - Diagnostics related feature requests and improvements [#5951](https://github.com/dotnet/vscode-csharp/issues/5951)
 - Debug from .csproj and .sln [#5876](https://github.com/dotnet/vscode-csharp/issues/5876)
 
+# 2.140.x
+
+This update brings new language features like Type Hierarchy and Call Hierarchy, major file-based apps improvements, significant performance gains, extensive Razor formatting and editing enhancements, Blazor WebAssembly debugging, and MAUI tooling improvements.
+
+## C# Language Support
+
+### Selection Range
+
+The LSP now supports **Selection Range** (`Expand Selection` / `Shrink Selection`), enabling smart expanding and shrinking of text selections based on the syntactic structure of your C# code. For example, you can progressively select from a variable name → the containing statement → the containing block → the method → the class, all with keyboard shortcuts. ([roslyn#82809](https://github.com/dotnet/roslyn/pull/82809))
+
+### Type Hierarchy and Call Hierarchy
+
+Two powerful navigation features are now available for C# in VS Code:
+
+- **Type Hierarchy** lets you explore the full inheritance chain of any class, interface, or struct — navigate through base types and derived types without leaving the editor. ([roslyn#83011](https://github.com/dotnet/roslyn/pull/83011))
+- **Call Hierarchy** lets you trace incoming and outgoing calls for any method, making it easy to understand how your code connects. Interface implementation categories for overrides are correctly shown, so you get an accurate picture of the full call chain. ([roslyn#82865](https://github.com/dotnet/roslyn/pull/82865))
+
+### File-based apps: automatic discovery and improved editing
+
+C# file-based apps (standalone `.cs` files that run without a project file) can now be [automatically discovered](https://github.com/dotnet/roslyn/blob/main/docs/features/file-based-programs-vscode.md#automatic-discovery) in the opened workspace folders. Set `dotnet.fileBasedApps.enableAutomaticDiscovery` to `true` to use it. This is particularly recommended when using the new `#:include` directive to enable file-based apps made up of multiple `.cs` files.
+
+Beyond discovery, the editing experience for file-based apps has been refined:
+
+- **Transitive `#:` directives** are now handled correctly, so transitive dependencies resolve properly.
+- **`#:` directives are preserved during formatting**, preventing the formatter from mangling file-based app metadata.
+- **Completions for `#:include` directives** help you discover available files as you type.
+- **Improved colorization** of file-based app directives makes them visually distinct from regular C# code.
+
+([vscode-csharp#9096](https://github.com/dotnet/vscode-csharp/pull/9096))
+
+## Performance
+
+### Faster solution loading with parallel analyzer initialization
+
+Solution-level analyzers now load in parallel during project initialization. In solutions with many analyzers (which is common when using .NET Analyzers, StyleCop, or other code analysis packages), this can meaningfully reduce the time between opening a solution and seeing your first diagnostics. ([roslyn#82447](https://github.com/dotnet/roslyn/pull/82447))
+
+### Reduced memory allocations across the language server
+
+A broad sweep of allocation reductions has been made across many hot paths in the language server:
+
+- **Syntax trivia handling** — modified search and walk methods now check green nodes first, avoiding unnecessary allocations.
+- **Text diffing and source text operations** — internal text line data structures now pack data more efficiently, reducing per-line overhead.
+- **Completion** — repeated `int.ToString` calls during completion item generation are now avoided.
+- **Document analysis and code fix service** — result creation and predicate evaluation now reuse objects instead of allocating.
+
+These improvements contribute to lower GC pressure and smoother editing, especially in large codebases.
+
+## Razor
+
+### Unused directives: fade, remove, and sort
+
+Unused `@using` directives in Razor files now appear **faded**, just like unused `using` statements in C# files. A new **"Remove unnecessary usings"** code action lets you clean them up in one click.
+
+Additionally, two new commands are available for Razor files:
+
+- **Remove and Sort Usings** — removes unused directives and sorts the remainder.
+- **Sort and Consolidate Usings** — sorts and consolidates `@using` directives without removing any.
+
+These features bring Razor's `@using` management in line with the C# editing experience. ([vscode-csharp#9040](https://github.com/dotnet/vscode-csharp/pull/9040))
+
+### Generate Method code action
+
+The **Generate Method** code action now works in Razor files. When you call a method that doesn't exist yet, you can generate a stub directly from the Razor editor — no need to switch to a `.cs` file first. This also works from the C# editor for methods referenced in Razor documents. ([vscode-csharp#9162](https://github.com/dotnet/vscode-csharp/pull/9162))
+
+### Rename in Razor source-generated documents
+
+Rename operations now work correctly in Razor source-generated documents, enabling more seamless refactoring across Razor and C# boundaries. Previously, renames could fail when the source-generated document couldn't be mapped back. ([vscode-csharp#9155](https://github.com/dotnet/vscode-csharp/pull/9155))
+
+### Formatting fixes
+
+A large number of Razor formatting issues have been resolved in this release:
+
+- **Multiline `@if` statements** are now formatted correctly.
+- **Ternary expressions** inside Razor blocks no longer break formatting.
+- **Wrapped CSS** in Razor files is now indented properly.
+- **`<pre>` tags** are now treated like `<textarea>` tags, so their content is preserved as-is.
+- **Void tag helpers** no longer break HTML formatting.
+- **Script tags** that are or contain tag helpers are now formatted correctly.
+- **Short HTML tag attributes** are now formatted correctly.
+- **Block-bodied lambda attributes** no longer break formatting.
+- **Trailing content after Razor comments** no longer causes formatting errors.
+
+### Bug fixes
+
+- **Diagnostics** no longer crash with a null reference exception when pulling diagnostics for certain document configurations. ([vscode-csharp#9206](https://github.com/dotnet/vscode-csharp/pull/9206))
+- **Unparseable document URIs** no longer crash the Razor language server. ([vscode-csharp#9206](https://github.com/dotnet/vscode-csharp/pull/9206))
+- **Code actions** for unmapped directive spans now correctly apply as Razor content. ([vscode-csharp#9067](https://github.com/dotnet/vscode-csharp/pull/9067))
+- **"Remove directive"** code action is no longer incorrectly offered for multi-line directives. ([vscode-csharp#9056](https://github.com/dotnet/vscode-csharp/pull/9056))
+- **Fix ArgumentOutOfRangeException** when orphan end tag follows HTML text (PR: [razor#13129](https://github.com/dotnet/razor/pull/13129))
+- **Fix compiler crash** for malformed attributes (PR: [razor#13120](https://github.com/dotnet/razor/pull/13120))
+## Debugging
+
+### Blazor WebAssembly debugging
+
+The extension now supports debugging **Blazor WebAssembly** applications targeting .NET 9 and later. You can set breakpoints, step through code, and inspect variables in your Blazor WASM projects directly from VS Code, using the `monovsdbg` debugger. This brings the Blazor WASM debugging experience closer to the server-side experience you're already familiar with. ([vscode-csharp#7220](https://github.com/dotnet/vscode-csharp/pull/7220))
+
+### Hot Reload improvements
+
+Several Hot Reload issues have been resolved. The DevKit Hot Reload flow now works correctly, and exception details are included in internal error messages to make troubleshooting easier. ([vscode-csharp#9155](https://github.com/dotnet/vscode-csharp/pull/9155), [vscode-csharp#9188](https://github.com/dotnet/vscode-csharp/pull/9188))
+
+### Debugger expression evaluation
+
+Evaluations inside **ref-returning methods** now work correctly during debugging. Previously, attempting to evaluate an expression in a method that returns by ref could produce incorrect results. ([vscode-csharp#9096](https://github.com/dotnet/vscode-csharp/pull/9096))
+
+## MAUI
+
+### XAML C# Expressions (XEXPR)
+
+The XAML tooling now has limited support for **C# expressions in XAML** (XEXPR), a new feature that allows you to write C# expressions directly in XAML markup. ([vscode-csharp#9225](https://github.com/dotnet/vscode-csharp/pull/9225))
+
+### Implicit XML namespace support
+
+Implicit XML namespaces for MAUI are now supported, reducing the need for explicit `xmlns` declarations in your XAML files. This simplifies MAUI XAML authoring by letting you reference common types without namespace prefixes. ([vscode-csharp#9091](https://github.com/dotnet/vscode-csharp/pull/9091))
+
+### Bug fixes
+
+- **SslStream disposal crash** — an intermittent crash caused by a disposed `SslStream` in the XAML tooling has been fixed. This was reported by multiple users as the C# language server crashing several times a day. ([vscode-csharp#9225](https://github.com/dotnet/vscode-csharp/pull/9225))
+- **Debug session shutdown crash** — the `msvsmon` process no longer crashes during debug session shutdown when XAML Hot Reload is enabled. ([vscode-csharp#9225](https://github.com/dotnet/vscode-csharp/pull/9225))
+- **Hot Reload error reporting** — XAML Hot Reload errors now display correctly when exceptions originate from indirectly-loaded views. ([vscode-csharp#9225](https://github.com/dotnet/vscode-csharp/pull/9225))
+- **Null reference exception** — an unhandled null reference exception in the XAML Language Service has been fixed. ([vscode-csharp#9091](https://github.com/dotnet/vscode-csharp/pull/9091))
+- **Legacy Hot Reload conflict** — legacy XAML Hot Reload is now automatically disabled when Source Generators are active, preventing conflicts. ([vscode-csharp#9091](https://github.com/dotnet/vscode-csharp/pull/9091))
+
+# 2.136.x
+* Update Roslyn to 5.7.0-1.26220.12 (PR: [#](https://github.com/dotnet/vscode-csharp/pull/))
+  * File-based apps: Adjust heuristics to properly handle transitive directives (PR: [#83185](https://github.com/dotnet/roslyn/pull/83185))
+  * Ensure we don't touch the remote host during new document formatting (PR: [#83212](https://github.com/dotnet/roslyn/pull/83212))
+  * Allow creation of DocumentUri for uris System.Uri cannot parse (PR: [#83210](https://github.com/dotnet/roslyn/pull/83210))
+  * Fix property pattern completion filtering out member being edited (PR: [#83230](https://github.com/dotnet/roslyn/pull/83230))
+  * Support MatchPriority comparison in LSP completion (PR: [#83164](https://github.com/dotnet/roslyn/pull/83164))
+  * Have CompleteStatement handle EOF statements (PR: [#83205](https://github.com/dotnet/roslyn/pull/83205))
+* Update Razor to 10.0.0-preview.26217.1 (PR: [#9206](https://github.com/dotnet/vscode-csharp/pull/9206))
+  * Fix Watson crash in ToRazorTextDocumentIdentifier when DocumentUri is unparseable (PR: [#13043](https://github.com/dotnet/razor/pull/13043))
+  * Fix NRE in CohostDocumentPullDiagnosticsEndpointBase.GetDiagnosticsAsync (PR: [#13044](https://github.com/dotnet/razor/pull/13044))
+* Update Roslyn to 5.7.0-1.26217.5 (PR: [#9155](https://github.com/dotnet/vscode-csharp/pull/9155))
+  * Allow cohost rename in Razor source-generated docs (PR: [#83217](https://github.com/dotnet/roslyn/pull/83217))
+  * Allow manual creation of hot reload brokered services in VSCode (PR: [#83082](https://github.com/dotnet/roslyn/pull/83082))
+  * Use standard LSP for source generator contents (PR: [#83119](https://github.com/dotnet/roslyn/pull/83119))
+  * Fix restore of misc project for virtual files and older SDKs (PR: [#83172](https://github.com/dotnet/roslyn/pull/83172))
+  * Improve TextLine and line table performance by packing existing data into unused bits (PR: [#83000](https://github.com/dotnet/roslyn/pull/83000))
+  * Restore removed brokered service descriptors for hot reload (PR: [#83184](https://github.com/dotnet/roslyn/pull/83184))
+* Update xamlTools to 18.7.11721.33 (PR: [#9225](https://github.com/dotnet/vscode-csharp/pull/9225))
+  * Fix msvsmon crash during debug session shutdown with XAML Hot Reload enabled (PR: AzDO#728217)
+  * Fix SslStream disposal crash (Issues: [9146](https://github.com/dotnet/vscode-csharp/issues/9146), [9183](https://github.com/dotnet/vscode-csharp/issues/9183), [9175](https://github.com/dotnet/vscode-csharp/issues/9175), PR: AzDO#728722)
+  * Fix XAML Hot Reload error reporting when exceptions originate from indirectly-loaded views (PR: AzDO#729745)
+  * XAML C# Expressions (XEXPR) limited support (PR: AzDO#721767)
+
+# 2.135.x
+* Bump lodash from 4.17.23 to 4.18.1 (PR: [#9152](https://github.com/dotnet/vscode-csharp/pull/9152))
+* Adding changes to support use monovsdbg to debug wasm apps. (PR: [#7220](https://github.com/dotnet/vscode-csharp/pull/7220))
+* Update Roslyn to 5.7.0-1.26213.1 (PR: [#9188](https://github.com/dotnet/vscode-csharp/pull/9188))
+  * Fix devkit hot reload (PR: [#83157](https://github.com/dotnet/roslyn/pull/83157))
+  * Fix Call Hierarchy missing interface implementation category for overrides (PR: [#83132](https://github.com/dotnet/roslyn/pull/83132))
+  * Skip unmappable source-generated document edits in rename (PR: [#83080](https://github.com/dotnet/roslyn/pull/83080))
+  * Fix misleading error when `#!` appears anywhere other than the start of the file (PR: [#83112](https://github.com/dotnet/roslyn/pull/83112))
+  * Fix mishandling of multiple output path changes in a single batch (PR: [#83121](https://github.com/dotnet/roslyn/pull/83121))
+  * Add option for import completion commit behavior (PR: [#82916](https://github.com/dotnet/roslyn/pull/82916))
+  * Fixers: Fix to add bounds checks and strip all boundary \r/\n chars (PR: [#83098](https://github.com/dotnet/roslyn/pull/83098))
+  * Add LSP TypeHierarchy Support (PR: [#83011](https://github.com/dotnet/roslyn/pull/83011))
+* Update Razor to 10.0.0-preview.26208.5 (PR: [#9162](https://github.com/dotnet/vscode-csharp/pull/9162))
+  * Support Generate Method code action in Razor and C# editors (PR: [#12960](https://github.com/dotnet/razor/pull/12960))
+
+# 2.134.x
+* Add setting `dotnet.fileBasedApps.enableAutomaticDiscovery` (PR: [#9096](https://github.com/dotnet/vscode-csharp/pull/9096))
+* Update Roslyn to 5.7.0-1.26203.6 (PR: [#9096](https://github.com/dotnet/vscode-csharp/pull/9096))
+  * File-based apps automatic discovery (PR: [#82863](https://github.com/dotnet/roslyn/pull/82863))
+  * Fix evaluations inside ref-returning methods (PR: [#83037](https://github.com/dotnet/roslyn/pull/83037))
+  * Fix with-element indentation in collection expressions on multiple lines (PR: [#83030](https://github.com/dotnet/roslyn/pull/83030))
+  * Do not crash if URI not parseable and no default handler exists (PR: [#83024](https://github.com/dotnet/roslyn/pull/83024))
+  * Allow generate method to run on Razor documents (PR: [#83028](https://github.com/dotnet/roslyn/pull/83028))
+  * Preserve #: file-based app directives during formatting (PR: [#82996](https://github.com/dotnet/roslyn/pull/82996))
+  * Move inheritance margin logic to a features service (PR: [#83001](https://github.com/dotnet/roslyn/pull/83001))
+  * Don't format plain blocks as member declaration blocks in top level code (PR: [#82976](https://github.com/dotnet/roslyn/pull/82976))
+  * Add LSP CallHierarchy support (PR: [#82865](https://github.com/dotnet/roslyn/pull/82865))
+  * Move CallHierarchy logic to the Features layer (PR: [#82864](https://github.com/dotnet/roslyn/pull/82864))
+  * Handle misc project having an AdditionalDocument and not a Document (PR: [#82956](https://github.com/dotnet/roslyn/pull/82956))
+  * Fix structure guideline anchor for initializer expressions with multi-line argument lists (PR: [#82946](https://github.com/dotnet/roslyn/pull/82946))
+  * Navigate to position instead of span for Go to Implementation (PR: [#82906](https://github.com/dotnet/roslyn/pull/82906))
+  * Only cache diagnostics for legacy projects (PR: [#82643](https://github.com/dotnet/roslyn/pull/82643))
+  * Improve classification of file-based app directives (PR: [#82627](https://github.com/dotnet/roslyn/pull/82627))
+  * Add support for skipping analyzing banned API analysis in generated files (PR: [#82713](https://github.com/dotnet/roslyn/pull/82713))
+  * Add regex search support to NavigateTo (PR: [#82706](https://github.com/dotnet/roslyn/pull/82706))
+  * Add completion provider for `#:include` directives (PR: [#82625](https://github.com/dotnet/roslyn/pull/82625))
+  * Modify SyntaxNode trivia search/walk methods to utilize green node checks (PR: [#82893](https://github.com/dotnet/roslyn/pull/82893))
+  * Fix handling of added import trivia (PR: [#82788](https://github.com/dotnet/roslyn/pull/82788))
+  * DeterministicKeyBuilder: deduplicate ParseOptions across SyntaxTrees (PR: [#82895](https://github.com/dotnet/roslyn/pull/82895))
+  * Fix InvalidCastException in split-if refactoring for top-level statements (PR: [#82807](https://github.com/dotnet/roslyn/pull/82807))
+
+# 2.133.x
+
+# 2.132.x
+* Update Razor to 10.0.0-preview.26179.2 (PR: [#9115](https://github.com/dotnet/vscode-csharp/pull/9115))
+  * Handle when there is non-whitespace content after the end of a Razor comment (PR: [#12961](https://github.com/dotnet/razor/pull/12961))
+  * Fix formatting of script tags that have/are tag helpers (PR: [#12922](https://github.com/dotnet/razor/pull/12922))
+  * Fix attribute formatting for short Html tags (PR: [#12944](https://github.com/dotnet/razor/pull/12944))
+* Update Roslyn to 5.6.0-2.26173.1 (PR: [#9093](https://github.com/dotnet/vscode-csharp/pull/9093))
+  * Optimize annotation search to avoid unnecessary red node creation (PR: [#82816](https://github.com/dotnet/roslyn/pull/82816))
+  * Reduce allocations in MergedNamespaceDeclaration.addNamespacesToChildren (PR: [#82819](https://github.com/dotnet/roslyn/pull/82819))
+  * Put binder for object initializers in the binder map (PR: [#82543](https://github.com/dotnet/roslyn/pull/82543))
+  * Unsafe evolution: update RequiresUnsafeAttribute namespace (PR: [#82813](https://github.com/dotnet/roslyn/pull/82813))
+  * Remove logging from CanonicalMiscellaneousFilesProjectProvider (PR: [#82861](https://github.com/dotnet/roslyn/pull/82861))
+  * Implement csproj-in-cone check for file-based app heuristic detection (PR: [#82633](https://github.com/dotnet/roslyn/pull/82633))
+  * Optimize codegen for slicing to end (PR: [#82729](https://github.com/dotnet/roslyn/pull/82729))
+  * Refactor fbp workspace management (PR: [#82509](https://github.com/dotnet/roslyn/pull/82509))
+  * Use correct length for Slice in object initializer (PR: [#82794](https://github.com/dotnet/roslyn/pull/82794))
+  * Simplifying internal structure and logic for the SyntaxNodeCache (PR: [#80825](https://github.com/dotnet/roslyn/pull/80825))
+  * Include `[RequiresUnsafe]` in PublicAPI signatures (PR: [#82731](https://github.com/dotnet/roslyn/pull/82731))
+  * Implement LSP `textDocument/selectionRange` handler (PR: [#82809](https://github.com/dotnet/roslyn/pull/82809))
+  * Reduce allocations in TextDocumentStates.AddRange (PR: [#82806](https://github.com/dotnet/roslyn/pull/82806))
+  * [EnC] Fix reporting emit errors in telemetry (PR: [#82805](https://github.com/dotnet/roslyn/pull/82805))
+  * Unsafe evolution: add warning for `unsafe` delegates (PR: [#82730](https://github.com/dotnet/roslyn/pull/82730))
+  * Small optimization reducing repeated int.ToString calls in completion (PR: [#82765](https://github.com/dotnet/roslyn/pull/82765))
+  * Fix `CSharpSimplifyPropertyAccessorDiagnosticAnalyzer` (PR: [#82776](https://github.com/dotnet/roslyn/pull/82776))
+  * [Hot Reload] Include exception details in internal error message (PR: [#82732](https://github.com/dotnet/roslyn/pull/82732))
+  * Fix another RuntimeAsync NRE with hoisted methods (PR: [#82624](https://github.com/dotnet/roslyn/pull/82624))
+  * Reduce allocations in GreenNode.To(Full)String (PR: [#82718](https://github.com/dotnet/roslyn/pull/82718))
+  * Fix small LookupResult pooling leak in NameofBinder.LookupSymbolsInSingleBinder (PR: [#82764](https://github.com/dotnet/roslyn/pull/82764))
+* Update Razor to 10.0.0-preview.26171.1 (PR: [#9090](https://github.com/dotnet/vscode-csharp/pull/9090))
+  * Don't squiggle unused directives in VS Code (PR: [#12932](https://github.com/dotnet/razor/pull/12932))
+  * Fix block bodied lambda attribute formatting (PR: [#12913](https://github.com/dotnet/razor/pull/12913))
+* Update Razor to 10.0.0-preview.26163.2 (PR: [#9067](https://github.com/dotnet/vscode-csharp/pull/9067))
+  * Treat unmapped directive spans as Razor for code actions (PR: [#12893](https://github.com/dotnet/razor/pull/12893))
+* Update xamlTools to 18.6.11622.36 (PR: [#9091](https://github.com/dotnet/vscode-csharp/pull/9091))
+  * Implicit XML namespaces for MAUI improvements, full support (PR: AzDO#708533)
+  * Fix unhandled null reference exception in XAML Language Servce (PR: AzDO#719778)
+  * Disable legacy XAML Hot Reload if SourceGen is active (PR: AzDO#715789)
+
+# 2.131.x
+* Update Roslyn to 5.6.0-2.26163.11 (PR: [#9068](https://github.com/dotnet/vscode-csharp/pull/9068))
+  * Reduce allocations in normal elfie usage (PR: [#82743](https://github.com/dotnet/roslyn/pull/82743))
+  * Reduce allocations in GetEscapedMetadataName (PR: [#82716](https://github.com/dotnet/roslyn/pull/82716))
+  * Cache diagnostics for method body compilation. (PR: [#82667](https://github.com/dotnet/roslyn/pull/82667))
+  * Unsafe evolution: handle `new()` constraint (PR: [#82647](https://github.com/dotnet/roslyn/pull/82647))
+  * Unsafe evolution: add LangVersion error for updated memory safety rules (PR: [#82687](https://github.com/dotnet/roslyn/pull/82687))
+  * Fix/76886 await nullable value type (PR: [#82146](https://github.com/dotnet/roslyn/pull/82146))
+  * ImplementSynthesizedBackingFieldSymbolBase.TryGetFirstLocation (PR: [#82679](https://github.com/dotnet/roslyn/pull/82679))
+  * Fix visiting unreachable `when` clauses in NullableWalker (PR: [#82563](https://github.com/dotnet/roslyn/pull/82563))
+  * Reduce allocations in DocumentAnalysisExecutor ctor (PR: [#82669](https://github.com/dotnet/roslyn/pull/82669))
+  * Fix IDE0059 to not flag writes to by-ref parameters or ref locals as redundant (PR: [#82664](https://github.com/dotnet/roslyn/pull/82664))
+  * Use a sequence point for custom awaiters with runtime async (PR: [#82605](https://github.com/dotnet/roslyn/pull/82605))
+  * Improve trivia handling in 'use as expression'. (PR: [#82577](https://github.com/dotnet/roslyn/pull/82577))
+* Update Razor to 10.0.0-preview.26155.3 (PR: [#9056](https://github.com/dotnet/vscode-csharp/pull/9056))
+  * Don't offer to remove directives when not on a single line directive (PR: [#12862](https://github.com/dotnet/razor/pull/12862))
+* Update Roslyn to 5.6.0-2.26159.3 (PR: [#9057](https://github.com/dotnet/vscode-csharp/pull/9057))
+  * Reduce allocations during source text diffing (PR: [#82462](https://github.com/dotnet/roslyn/pull/82462))
+  * Don't log named pipe connection failures as errors in BuildServerConnection (PR: [#82609](https://github.com/dotnet/roslyn/pull/82609))
+  * Ensure that lambdas are not cached in runtime async (PR: [#82559](https://github.com/dotnet/roslyn/pull/82559))
+  * Ensure that a double-dispose of CPSProject doesn't throw (PR: [#82557](https://github.com/dotnet/roslyn/pull/82557))
+  * Add support for nullable with runtime async (PR: [#82516](https://github.com/dotnet/roslyn/pull/82516))
+  * Fix invalid `csharp_space_around_declaration_statements` option value (PR: [#80996](https://github.com/dotnet/roslyn/pull/80996))
+  * Avoid eliding nested pointer-to-ref conversions (PR: [#82263](https://github.com/dotnet/roslyn/pull/82263))
+* Update Razor to 10.0.0-preview.26152.1 (PR: [#9040](https://github.com/dotnet/vscode-csharp/pull/9040))
+  * Fade unused directives, add "Remove unnecessary" code action and support Remove and Sort commands (PR: [#12831](https://github.com/dotnet/razor/pull/12831))
+  * Add Remove and Sort Usings command handling (PR: [#12834](https://github.com/dotnet/razor/pull/12834))
+  * Create "Sort and Consolidate Usings" code action (PR: [#12824](https://github.com/dotnet/razor/pull/12824))
+  * Fix formatting of wrapped CSS (PR: [#12823](https://github.com/dotnet/razor/pull/12823))
+  * Format (or don't!) pre tags like textarea tags (PR: [#12813](https://github.com/dotnet/razor/pull/12813))
+  * Fix formatting of ternary expressions (and others?) (PR: [#12808](https://github.com/dotnet/razor/pull/12808))
+  * Fix formatting of multiline `@if` statements (PR: [#12814](https://github.com/dotnet/razor/pull/12814))
+* Update Roslyn to 5.6.0-2.26127.2 (PR: [#9034](https://github.com/dotnet/vscode-csharp/pull/))
+  * Fix signature help crash when invoked through extension property (PR: [#82537](https://github.com/dotnet/roslyn/pull/82537))
+  * Fix ReflectionTypeLoadException in CodeStyleHostLanguageServices MEF composition (PR: [#82442](https://github.com/dotnet/roslyn/pull/82442))
+  * Parallelize loading solution-level analyzers (PR: [#82447](https://github.com/dotnet/roslyn/pull/82447))
+  * Reduce allocations under CodeFixService.GetShouldIncludeDiagnosticPredicate (PR: [#82492](https://github.com/dotnet/roslyn/pull/82492))
+  * Extensions: fix crash with targeted attribute on extension block (PR: [#82463](https://github.com/dotnet/roslyn/pull/82463))
+  * Improve navigate-to filtering to avoid scanning documents unnecessarily. (PR: [#82431](https://github.com/dotnet/roslyn/pull/82431))
+  * Remove `IQueueItem` abstraction and standardize CLSP queue pipeline on `QueueItem` (PR: [#82410](https://github.com/dotnet/roslyn/pull/82410))
+  * Remove error reporting out of clasp and rely on host to report errors (PR: [#82435](https://github.com/dotnet/roslyn/pull/82435))
+  * Report unnecessary imports diagnostics in Razor generated files (PR: [#82419](https://github.com/dotnet/roslyn/pull/82419))
+* Update Razor to 10.0.0-preview.26121.1 (PR: [#9025](https://github.com/dotnet/vscode-csharp/pull/9025))
+  * Fix formatting incorrect for void tag helpers (PR: [#12802](https://github.com/dotnet/razor/pull/12802))
+  * Add theme info for leading whitespace to a comment (PR: [#12791](https://github.com/dotnet/razor/pull/12791))
+
 # 2.130.x
 
 This update brings significant improvements to reliability, diagnostics tooling, language server performance, and Razor editing.
