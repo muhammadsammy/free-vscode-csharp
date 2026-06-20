@@ -11,8 +11,6 @@ import { IDisposable } from '../../disposable';
 import { languageServerOptions } from '../../shared/options';
 import { RoslynLspErrorCodes } from './roslynProtocol';
 import { showErrorMessageWithOptions } from '../../shared/observers/utils/showMessage';
-import { ITelemetryReporter } from '../../shared/telemetryReporter';
-import { TelemetryEventNames } from '../../shared/telemetryEventNames';
 
 /**
  * Implementation of the base LanguageClient type that allows for additional items to be disposed of
@@ -21,7 +19,6 @@ import { TelemetryEventNames } from '../../shared/telemetryEventNames';
 export class RoslynLanguageClient extends LanguageClient {
     private readonly _disposables: CompositeDisposable;
     private readonly _csharpOutputWindow: vscode.OutputChannel;
-    private readonly _telemetryReporter: ITelemetryReporter;
 
     /**
      * Tracks if we've shown a connection close notification for the server session to
@@ -35,7 +32,6 @@ export class RoslynLanguageClient extends LanguageClient {
         name: string,
         serverOptions: ServerOptions,
         clientOptions: LanguageClientOptions,
-        telemetryReporter: ITelemetryReporter,
         csharpOutputWindow: vscode.OutputChannel,
         forceDebug?: boolean
     ) {
@@ -43,7 +39,6 @@ export class RoslynLanguageClient extends LanguageClient {
 
         this._disposables = new CompositeDisposable();
         this._csharpOutputWindow = csharpOutputWindow;
-        this._telemetryReporter = telemetryReporter;
 
         this.registerStateChangeHandler();
     }
@@ -162,7 +157,6 @@ export class RoslynLanguageClient extends LanguageClient {
         }
 
         this._hasShownConnectionClose = true;
-        this._telemetryReporter.sendTelemetryEvent(TelemetryEventNames.ServerCrash);
         this.showCrashNotificationCore();
     }
 

@@ -314,7 +314,6 @@ export class RoslynLanguageServer {
             'Microsoft.CodeAnalysis.LanguageServer',
             serverOptions,
             clientOptions,
-            telemetryReporter,
             channel
         );
 

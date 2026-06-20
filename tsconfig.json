@@ -2,7 +2,7 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "target": "ES2022",
-    "module": "commonjs",
+    "module": "node16",
     "outDir": "out",
     "lib": ["ES2021"],
     "paths": {
@@ -29,7 +29,7 @@
       "vscode-jsonrpc/node": ["./node_modules/vscode-jsonrpc/lib/node/main"]
     },
     "sourceMap": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node16",
     "moduleDetection": "force",
     "strict": true,
     "forceConsistentCasingInFileNames": true,
