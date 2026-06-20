@@ -29,6 +29,7 @@ import { checkIsSupportedPlatform } from './checkSupportedPlatform';
 import { activateOmniSharp } from './activateOmniSharp';
 import { activateRoslyn } from './activateRoslyn';
 import { LimitedActivationStatus } from './shared/limitedActivationStatus';
+import { getRuntimeDependencyPackageWithId } from './tools/runtimeDependencyPackageUtils';
 
 export async function activate(
     context: vscode.ExtensionContext
@@ -74,8 +75,20 @@ export async function activate(
 
     const csharpDevkitExtension = getCSharpDevKit();
     const useOmnisharpServer = !csharpDevkitExtension && commonOptions.useOmnisharpServer;
-    if (useOmnisharpServer) {
+    csharpChannel.info(`Found setting [useOmnisharpServer]=${useOmnisharpServer}`);
+    csharpChannel.info(`Found setting [commonOptions.serverPath]=${commonOptions.serverPath}`);
+    if (useOmnisharpServer && !commonOptions.serverPath) {
         requiredPackageIds.push('OmniSharp');
+        csharpChannel.info("Adding 'OmniSharp' to download list");
+    } else {
+        csharpChannel.info("Skipping 'OmniSharp' for download");
+    }
+    csharpChannel.info(`Found setting [commonOptions.razorlspPath]=${commonOptions.razorlspPath}`);
+    if (useOmnisharpServer && !commonOptions.razorlspPath) {
+        requiredPackageIds.push('RazorOmnisharp');
+        csharpChannel.info("Adding 'RazorOmnisharp' to download list");
+    } else {
+        csharpChannel.info("Skipping 'RazorOmnisharp' for download");
     }
     requiredPackageIds.push('VSWebAssemblyBridge');
     if (csharpDevkitExtension && !commonOptions.disableAIFeatures) {
@@ -96,6 +109,38 @@ export async function activate(
         useFramework,
         requiredPackageIds
     );
+
+    if (useOmnisharpServer) {
+        if (requiredPackageIds.includes('OmniSharp') && runtimeDependenciesExist['OmniSharp']) {
+            const pkg = getRuntimeDependencyPackageWithId(
+                'OmniSharp',
+                context.extension.packageJSON,
+                platformInfo,
+                context.extension.extensionPath
+            );
+            if (pkg && pkg.installTestPath) {
+                await vscode.workspace
+                    .getConfiguration()
+                    .update('dotnet.server.path', pkg.installTestPath.value, vscode.ConfigurationTarget.Global);
+            }
+        }
+        if (requiredPackageIds.includes('RazorOmnisharp') && runtimeDependenciesExist['RazorOmnisharp']) {
+            const pkg = getRuntimeDependencyPackageWithId(
+                'RazorOmnisharp',
+                context.extension.packageJSON,
+                platformInfo,
+                context.extension.extensionPath
+            );
+            if (pkg) {
+                await vscode.workspace
+                    .getConfiguration()
+                    .update('dotnet.razorlspPath', pkg.installPath.value, vscode.ConfigurationTarget.Global);
+                await vscode.workspace
+                    .getConfiguration()
+                    .update('razor.languageServer.directory', pkg.installPath.value, vscode.ConfigurationTarget.Global);
+            }
+        }
+    }
 
     let exports: CSharpExtensionExports | OmnisharpExtensionExports | LimitedExtensionExports;
     if (vscode.workspace.isTrusted !== true) {
