@@ -12,15 +12,44 @@
     "bugs": {
         "url": "https://github.com/muhammadsammy/free-vscode-csharp/issues"
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/muhammadsammy/free-vscode-csharp.git"
-    },
     "categories": [
         "Debuggers",
         "Programming Languages",
         "Linters",
         "Snippets"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/muhammadsammy/free-vscode-csharp.git"
+    },
+  "engines": {
+    "vscode": "^1.106.0"
+  },
+  "activationEvents": [
+    "onDebugInitialConfigurations",
+    "onDebugResolve:blazorwasm",
+    "onDebugResolve:coreclr",
+    "onDebugResolve:clr",
+    "onDebugResolve:monovsdbg",
+    "onDebugResolve:monovsdbg_wasm",
+    "onDebugResolve:dotnet",
+    "onLanguage:csharp",
+    "onCommand:o.showOutput",
+    "onCommand:omnisharp.registerLanguageMiddleware",
+    "workspaceContains:**/*.{csproj,csx,cake}"
+  ],
+  "contributes": {
+    "themes": [
+      {
+        "label": "Visual Studio 2019 Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/vs2019_dark.json"
+      },
+      {
+        "label": "Visual Studio 2019 Light",
+        "uiTheme": "vs",
+        "path": "./themes/vs2019_light.json"
+      }
     ],
     "keywords": [
         "multi-root ready",
@@ -293,338 +322,376 @@
             "integrity": "C3A345E07E6EDA5C6ADF9D4FC067640DABE0C1A75C2CAC49340AEC21F1687799"
         },
         {
-            "id": "OmniSharp",
-            "description": "OmniSharp for Linux (Mono / x86)",
-            "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-linux-x86.zip",
-            "installPath": ".omnisharp/1.39.14",
-            "platforms": [
-                "linux"
-            ],
-            "architectures": [
-                "x86",
-                "i686"
-            ],
-            "binaries": [
-                "./mono.linux-x86",
-                "./run"
-            ],
-            "installTestPath": "./.omnisharp/1.39.14/run",
-            "platformId": "linux-x86",
-            "isFramework": true,
-            "integrity": "8A35A36FAE073E975F9D8C7F1DE58AFB07F504E12D7DBFFA95E4A52E2D0E6610"
-        },
-        {
-            "id": "OmniSharp",
-            "description": "OmniSharp for Linux (Mono / x64)",
-            "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.15/omnisharp-linux-x64.zip",
-            "installPath": ".omnisharp/1.39.14",
-            "platforms": [
-                "linux"
-            ],
-            "architectures": [
-                "x86_64"
-            ],
-            "binaries": [
-                "./mono.linux-x86_64",
-                "./run"
-            ],
-            "installTestPath": "./.omnisharp/1.39.14/run",
-            "platformId": "linux-x64",
-            "isFramework": true,
-            "integrity": "4F146EB94A195A437361C0FEC527309F0AA31474C6D9B7B9E0BC9A1804BD8EAF"
-        },
-        {
-            "id": "OmniSharp",
-            "description": "OmniSharp for Linux (.NET 6 / x64)",
-            "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-linux-x64-net6.0.zip",
-            "installPath": ".omnisharp/1.39.14-net6.0",
-            "platforms": [
-                "linux"
-            ],
-            "architectures": [
-                "x86_64"
-            ],
-            "installTestPath": "./.omnisharp/1.39.14-net6.0/OmniSharp.dll",
-            "platformId": "linux-x64",
-            "isFramework": false,
-            "integrity": "EBA3F00A807517789BE0188F86F8B685D74359D6BD684D7A0B0125E33AD59D89"
-        },
-        {
-            "id": "OmniSharp",
-            "description": "OmniSharp for Linux (Mono / arm64)",
-            "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-linux-arm64.zip",
-            "installPath": ".omnisharp/1.39.14",
-            "platforms": [
-                "linux"
-            ],
-            "architectures": [
-                "arm64"
-            ],
-            "binaries": [
-                "./mono.linux-arm64",
-                "./run"
-            ],
-            "installTestPath": "./.omnisharp/1.39.14/run",
-            "platformId": "linux-arm64",
-            "isFramework": true,
-            "integrity": "B33419B089119D5327A228636BBA5713715D4D76B4B0FB4EFEFCBECE2F8F2D22"
-        },
-        {
-            "id": "OmniSharp",
-            "description": "OmniSharp for Linux (.NET 6 / arm64)",
-            "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-linux-arm64-net6.0.zip",
-            "installPath": ".omnisharp/1.39.14-net6.0",
-            "platforms": [
-                "linux"
-            ],
-            "architectures": [
-                "arm64"
-            ],
-            "installTestPath": "./.omnisharp/1.39.14-net6.0/OmniSharp.dll",
-            "platformId": "linux-arm64",
-            "isFramework": false,
-            "integrity": "0E2C69F191268959D68A35E1CC8FD832A688AF516A9945EF25DC8C6EA014A7C2"
-        },
-        {
-            "id": "OmniSharp",
-            "description": "OmniSharp for Linux musl (.NET 6 / x64)",
-            "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-linux-musl-x64-net6.0.zip",
-            "installPath": ".omnisharp/1.39.14-net6.0",
-            "platforms": [
-                "linux-musl"
-            ],
-            "architectures": [
-                "x86_64"
-            ],
-            "installTestPath": "./.omnisharp/1.39.14-net6.0/OmniSharp.dll",
-            "platformId": "linux-musl-x64",
-            "isFramework": false,
-            "integrity": "098106AA7AA22FB427A5333B120916BD0C2FA8A303DA9653992E45F20BFD6AAF"
-        },
-        {
-            "id": "OmniSharp",
-            "description": "OmniSharp for Linux musl (.NET 6 / arm64)",
-            "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-linux-musl-arm64-net6.0.zip",
-            "installPath": ".omnisharp/1.39.14-net6.0",
-            "platforms": [
-                "linux-musl"
-            ],
-            "architectures": [
-                "arm64"
-            ],
-            "installTestPath": "./.omnisharp/1.39.14-net6.0/OmniSharp.dll",
-            "platformId": "linux-musl-arm64",
-            "isFramework": false,
-            "integrity": "7CF8465D490D6D5362C0FBB5F9550C95FBCB8D306079185CC533D37A7A40F666"
-        },
-        {
-            "id": "RoslynCopilot",
-            "description": "Language server for Roslyn Copilot integration",
-            "url": "https://roslyn.blob.core.windows.net/releases/Microsoft.VisualStudio.Copilot.Roslyn.LanguageServer-18.3.72-alpha.zip",
-            "installPath": ".roslynCopilot",
-            "platforms": [
-                "neutral"
-            ],
-            "architectures": [
-                "neutral"
-            ],
-            "installTestPath": "./.roslynCopilot/Microsoft.VisualStudio.Copilot.Roslyn.LanguageServer.dll",
-            "integrity": "8F2F8B686D7E2FFD8E7C9AD980C5DE8FD1F0A6CFB5B6B1E13024EF6501E63D8E"
-        },
-        {
-            "id": "Debugger",
-            "description": ".NET Core Debugger (Windows / x64)",
-            "url": "https://github.com/Samsung/netcoredbg/releases/download/3.1.3-1062/netcoredbg-win64.zip",
-            "installPath": ".debugger",
-            "platforms": [
-                "win32"
-            ],
-            "architectures": [
-                "x86_64"
-            ],
-            "installTestPath": ".debugger/netcoredbg/netcoredbg.exe"
-        },
-        {
-            "id": "Debugger",
-            "description": ".NET Core Debugger (macOS / x64)",
-            "url": "https://github.com/Samsung/netcoredbg/releases/download/3.1.3-1062/netcoredbg-osx-amd64.tar.gz",
-            "installPath": ".debugger",
-            "platforms": [
-                "darwin"
-            ],
-            "architectures": [
-                "x86_64",
-                "arm64"
-            ],
-            "binaries": [
-                "./netcoredbg"
-            ],
-            "installTestPath": ".debugger/netcoredbg/netcoredbg"
-        },
-        {
-            "id": "Debugger",
-            "description": ".NET Core Debugger (linux / ARM64)",
-            "url": "https://github.com/Samsung/netcoredbg/releases/download/3.1.3-1062/netcoredbg-linux-arm64.tar.gz",
-            "installPath": ".debugger",
-            "platforms": [
-                "linux"
-            ],
-            "architectures": [
-                "arm64"
-            ],
-            "binaries": [
-                "./netcoredbg"
-            ],
-            "installTestPath": ".debugger/netcoredbg/netcoredbg"
-        },
-        {
-            "id": "Debugger",
-            "description": ".NET Core Debugger (linux / x64)",
-            "url": "https://github.com/Samsung/netcoredbg/releases/download/3.1.3-1062/netcoredbg-linux-amd64.tar.gz",
-            "installPath": ".debugger",
-            "platforms": [
-                "linux",
-                "linux-musl"
-            ],
-            "architectures": [
-                "x86_64"
-            ],
-            "binaries": [
-                "./netcoredbg"
-            ],
-            "installTestPath": ".debugger/netcoredbg/netcoredbg"
-        },
-        {
-            "id": "RazorOmnisharp",
-            "description": "Razor Language Server for OmniSharp (Windows / x64)",
-            "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/8d42e62ea4051381c219b3e31bc4eced/razorlanguageserver-win-x64-7.0.0-preview.23363.1.zip",
-            "installPath": ".razoromnisharp",
-            "platforms": [
-                "win32"
-            ],
-            "architectures": [
-                "x86_64"
-            ]
-        },
-        {
-            "id": "RazorOmnisharp",
-            "description": "Razor Language Server for OmniSharp (Windows / ARM64)",
-            "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/4ef26e45cf32fe8d51c0e7dd21f1fef6/razorlanguageserver-win-arm64-7.0.0-preview.23363.1.zip",
-            "installPath": ".razoromnisharp",
-            "platforms": [
-                "win32"
-            ],
-            "architectures": [
-                "arm64"
-            ]
-        },
-        {
-            "id": "RazorOmnisharp",
-            "description": "Razor Language Server for OmniSharp (Linux / x64)",
-            "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/6d4e23a3c7cf0465743950a39515a716/razorlanguageserver-linux-x64-7.0.0-preview.23363.1.zip",
-            "installPath": ".razoromnisharp",
-            "platforms": [
-                "linux"
-            ],
-            "architectures": [
-                "x86_64"
-            ],
-            "binaries": [
-                "./rzls"
-            ]
-        },
-        {
-            "id": "RazorOmnisharp",
-            "description": "Razor Language Server for OmniSharp (Linux ARM64)",
-            "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/85deebd44647ebf65724cc291d722283/razorlanguageserver-linux-arm64-7.0.0-preview.23363.1.zip",
-            "installPath": ".razoromnisharp",
-            "platforms": [
-                "linux"
-            ],
-            "architectures": [
-                "arm64"
-            ],
-            "binaries": [
-                "./rzls"
-            ]
-        },
-        {
-            "id": "RazorOmnisharp",
-            "description": "Razor Language Server for OmniSharp (Linux musl / x64)",
-            "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/4f0caa94ae182785655efb15eafcef23/razorlanguageserver-linux-musl-x64-7.0.0-preview.23363.1.zip",
-            "installPath": ".razoromnisharp",
-            "platforms": [
-                "linux-musl"
-            ],
-            "architectures": [
-                "x86_64"
-            ],
-            "binaries": [
-                "./rzls"
-            ]
-        },
-        {
-            "id": "RazorOmnisharp",
-            "description": "Razor Language Server for OmniSharp (Linux musl ARM64)",
-            "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/0a24828206a6f3b4bc743d058ef88ce7/razorlanguageserver-linux-musl-arm64-7.0.0-preview.23363.1.zip",
-            "installPath": ".razoromnisharp",
-            "platforms": [
-                "linux-musl"
-            ],
-            "architectures": [
-                "arm64"
-            ],
-            "binaries": [
-                "./rzls"
-            ]
-        },
-        {
-            "id": "RazorOmnisharp",
-            "description": "Razor Language Server for OmniSharp (macOS / x64)",
-            "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/2afcafaf41082989efcc10405abb9314/razorlanguageserver-osx-x64-7.0.0-preview.23363.1.zip",
-            "installPath": ".razoromnisharp",
-            "platforms": [
-                "darwin"
-            ],
-            "architectures": [
-                "x86_64"
-            ],
-            "binaries": [
-                "./rzls"
-            ]
-        },
-        {
-            "id": "RazorOmnisharp",
-            "description": "Razor Language Server for OmniSharp (macOS ARM64)",
-            "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/8bf2ed2f00d481a5987e3eb5165afddd/razorlanguageserver-osx-arm64-7.0.0-preview.23363.1.zip",
-            "installPath": ".razoromnisharp",
-            "platforms": [
-                "darwin"
-            ],
-            "architectures": [
-                "arm64"
-            ],
-            "binaries": [
-                "./rzls"
-            ]
-        },
-        {
-            "id": "VSWebAssemblyBridge",
-            "description": "VSWebAssemblyBridge (Platform Agnostic)",
-            "url": "https://vsdebugger.blob.core.windows.net/vswebassemblybridge-9-0-705702/vswebassemblybridge.zip",
-            "installPath": ".vswebassemblybridge",
-            "platforms": [
-                "win32",
-                "linux",
-                "darwin"
-            ],
-            "architectures": [
-                "x86",
-                "x86_64",
-                "arm64"
-            ],
-            "integrity": "9FDBDC91E2D79028A8932C1A96D3ABCFC7F40472FBC8F226E3FB1F6A1B5C97E7"
-        }
+      "id": "OmniSharp",
+      "description": "OmniSharp for Windows (.NET 6 / x64)",
+      "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-win-x64-net6.0.zip",
+      "installPath": ".omnisharp/1.39.14-net6.0",
+      "platforms": [
+        "win32"
+      ],
+      "architectures": [
+        "x86_64"
+      ],
+      "installTestPath": "./.omnisharp/1.39.14-net6.0/OmniSharp.dll",
+      "platformId": "win-x64",
+      "isFramework": false,
+      "integrity": "DA298BCBD471E9A8D2B5A007132B5F5CD567FE6A9C84BC97A7ABD4005AAD6A96"
+    },
+    {
+      "id": "OmniSharp",
+      "description": "OmniSharp for Windows (.NET 4.7.2 / arm64)",
+      "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-win-arm64.zip",
+      "installPath": ".omnisharp/1.39.14",
+      "platforms": [
+        "win32"
+      ],
+      "architectures": [
+        "arm64"
+      ],
+      "installTestPath": "./.omnisharp/1.39.14/OmniSharp.exe",
+      "platformId": "win-arm64",
+      "isFramework": true,
+      "integrity": "D171EFE3D50D2C5E6F05AF124144E6DA3083866A867DE8E10C115E44F32A03F3"
+    },
+    {
+      "id": "OmniSharp",
+      "description": "OmniSharp for Windows (.NET 6 / arm64)",
+      "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-win-arm64-net6.0.zip",
+      "installPath": ".omnisharp/1.39.14-net6.0",
+      "platforms": [
+        "win32"
+      ],
+      "architectures": [
+        "arm64"
+      ],
+      "installTestPath": "./.omnisharp/1.39.14-net6.0/OmniSharp.dll",
+      "platformId": "win-arm64",
+      "isFramework": false,
+      "integrity": "60324F7482472E081AA560F5FB46BC8A286A38D327C76F7ECE2595994154D7F6"
+    },
+    {
+      "id": "OmniSharp",
+      "description": "OmniSharp for OSX (Mono / x64)",
+      "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-osx.zip",
+      "installPath": ".omnisharp/1.39.14",
+      "platforms": [
+        "darwin"
+      ],
+      "architectures": [
+        "x86_64",
+        "arm64"
+      ],
+      "binaries": [
+        "./mono.osx",
+        "./run"
+      ],
+      "installTestPath": "./.omnisharp/1.39.14/run",
+      "platformId": "osx",
+      "isFramework": true,
+      "integrity": "D1CD0A8A55E99BD8636D329946D69CDE3E0FEA518A3AB9F1A300C8C62FFD9980"
+    },
+    {
+      "id": "OmniSharp",
+      "description": "OmniSharp for OSX (.NET 6 / x64)",
+      "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-osx-x64-net6.0.zip",
+      "installPath": ".omnisharp/1.39.14-net6.0",
+      "platforms": [
+        "darwin"
+      ],
+      "architectures": [
+        "x86_64"
+      ],
+      "installTestPath": "./.omnisharp/1.39.14-net6.0/OmniSharp.dll",
+      "platformId": "osx-x64",
+      "isFramework": false,
+      "integrity": "C1DD5FB6A45420B55B1698F1A49DA056B643C834D57004BC65ED32EE9335F308"
+    },
+    {
+      "id": "OmniSharp",
+      "description": "OmniSharp for OSX (.NET 6 / arm64)",
+      "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-osx-arm64-net6.0.zip",
+      "installPath": ".omnisharp/1.39.14-net6.0",
+      "platforms": [
+        "darwin"
+      ],
+      "architectures": [
+        "arm64"
+      ],
+      "installTestPath": "./.omnisharp/1.39.14-net6.0/OmniSharp.dll",
+      "platformId": "osx-arm64",
+      "isFramework": false,
+      "integrity": "C3A345E07E6EDA5C6ADF9D4FC067640DABE0C1A75C2CAC49340AEC21F1687799"
+    },
+    {
+      "id": "OmniSharp",
+      "description": "OmniSharp for Linux (Mono / x86)",
+      "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-linux-x86.zip",
+      "installPath": ".omnisharp/1.39.14",
+      "platforms": [
+        "linux"
+      ],
+      "architectures": [
+        "x86",
+        "i686"
+      ],
+      "binaries": [
+        "./mono.linux-x86",
+        "./run"
+      ],
+      "installTestPath": "./.omnisharp/1.39.14/run",
+      "platformId": "linux-x86",
+      "isFramework": true,
+      "integrity": "8A35A36FAE073E975F9D8C7F1DE58AFB07F504E12D7DBFFA95E4A52E2D0E6610"
+    },
+    {
+      "id": "OmniSharp",
+      "description": "OmniSharp for Linux (Mono / x64)",
+      "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-linux-x64.zip",
+      "installPath": ".omnisharp/1.39.14",
+      "platforms": [
+        "linux"
+      ],
+      "architectures": [
+        "x86_64"
+      ],
+      "binaries": [
+        "./mono.linux-x86_64",
+        "./run"
+      ],
+      "installTestPath": "./.omnisharp/1.39.14/run",
+      "platformId": "linux-x64",
+      "isFramework": true,
+      "integrity": "4F146EB94A195A437361C0FEC527309F0AA31474C6D9B7B9E0BC9A1804BD8EAF"
+    },
+    {
+      "id": "OmniSharp",
+      "description": "OmniSharp for Linux (.NET 6 / x64)",
+      "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-linux-x64-net6.0.zip",
+      "installPath": ".omnisharp/1.39.14-net6.0",
+      "platforms": [
+        "linux"
+      ],
+      "architectures": [
+        "x86_64"
+      ],
+      "installTestPath": "./.omnisharp/1.39.14-net6.0/OmniSharp.dll",
+      "platformId": "linux-x64",
+      "isFramework": false,
+      "integrity": "EBA3F00A807517789BE0188F86F8B685D74359D6BD684D7A0B0125E33AD59D89"
+    },
+    {
+      "id": "OmniSharp",
+      "description": "OmniSharp for Linux (Mono / arm64)",
+      "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-linux-arm64.zip",
+      "installPath": ".omnisharp/1.39.14",
+      "platforms": [
+        "linux"
+      ],
+      "architectures": [
+        "arm64"
+      ],
+      "binaries": [
+        "./mono.linux-arm64",
+        "./run"
+      ],
+      "installTestPath": "./.omnisharp/1.39.14/run",
+      "platformId": "linux-arm64",
+      "isFramework": true,
+      "integrity": "B33419B089119D5327A228636BBA5713715D4D76B4B0FB4EFEFCBECE2F8F2D22"
+    },
+    {
+      "id": "OmniSharp",
+      "description": "OmniSharp for Linux (.NET 6 / arm64)",
+      "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-linux-arm64-net6.0.zip",
+      "installPath": ".omnisharp/1.39.14-net6.0",
+      "platforms": [
+        "linux"
+      ],
+      "architectures": [
+        "arm64"
+      ],
+      "installTestPath": "./.omnisharp/1.39.14-net6.0/OmniSharp.dll",
+      "platformId": "linux-arm64",
+      "isFramework": false,
+      "integrity": "0E2C69F191268959D68A35E1CC8FD832A688AF516A9945EF25DC8C6EA014A7C2"
+    },
+    {
+      "id": "OmniSharp",
+      "description": "OmniSharp for Linux musl (.NET 6 / x64)",
+      "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-linux-musl-x64-net6.0.zip",
+      "installPath": ".omnisharp/1.39.14-net6.0",
+      "platforms": [
+        "linux-musl"
+      ],
+      "architectures": [
+        "x86_64"
+      ],
+      "installTestPath": "./.omnisharp/1.39.14-net6.0/OmniSharp.dll",
+      "platformId": "linux-musl-x64",
+      "isFramework": false,
+      "integrity": "098106AA7AA22FB427A5333B120916BD0C2FA8A303DA9653992E45F20BFD6AAF"
+    },
+    {
+      "id": "OmniSharp",
+      "description": "OmniSharp for Linux musl (.NET 6 / arm64)",
+      "url": "https://roslynomnisharp.blob.core.windows.net/releases/1.39.14/omnisharp-linux-musl-arm64-net6.0.zip",
+      "installPath": ".omnisharp/1.39.14-net6.0",
+      "platforms": [
+        "linux-musl"
+      ],
+      "architectures": [
+        "arm64"
+      ],
+      "installTestPath": "./.omnisharp/1.39.14-net6.0/OmniSharp.dll",
+      "platformId": "linux-musl-arm64",
+      "isFramework": false,
+      "integrity": "7CF8465D490D6D5362C0FBB5F9550C95FBCB8D306079185CC533D37A7A40F666"
+    },
+          {
+      "id": "RoslynCopilot",
+      "description": "Language server for Roslyn Copilot integration",
+      "url": "https://roslyn.blob.core.windows.net/releases/Microsoft.VisualStudio.Copilot.Roslyn.LanguageServer-18.3.72-alpha.zip",
+      "installPath": ".roslynCopilot",
+      "platforms": [
+        "neutral"
+      ],
+      "architectures": [
+        "neutral"
+      ],
+      "installTestPath": "./.roslynCopilot/Microsoft.VisualStudio.Copilot.Roslyn.LanguageServer.dll",
+      "integrity": "8F2F8B686D7E2FFD8E7C9AD980C5DE8FD1F0A6CFB5B6B1E13024EF6501E63D8E"
+    },
+    {
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (Windows / x64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/8d42e62ea4051381c219b3e31bc4eced/razorlanguageserver-win-x64-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
+      "platforms": [
+        "win32"
+      ],
+      "architectures": [
+        "x86_64"
+      ]
+    },
+    {
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (Windows / ARM64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/4ef26e45cf32fe8d51c0e7dd21f1fef6/razorlanguageserver-win-arm64-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
+      "platforms": [
+        "win32"
+      ],
+      "architectures": [
+        "arm64"
+      ]
+    },
+    {
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (Linux / x64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/6d4e23a3c7cf0465743950a39515a716/razorlanguageserver-linux-x64-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
+      "platforms": [
+        "linux"
+      ],
+      "architectures": [
+        "x86_64"
+      ],
+      "binaries": [
+        "./rzls"
+      ]
+    },
+    {
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (Linux ARM64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/85deebd44647ebf65724cc291d722283/razorlanguageserver-linux-arm64-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
+      "platforms": [
+        "linux"
+      ],
+      "architectures": [
+        "arm64"
+      ],
+      "binaries": [
+        "./rzls"
+      ]
+    },
+    {
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (Linux musl / x64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/4f0caa94ae182785655efb15eafcef23/razorlanguageserver-linux-musl-x64-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
+      "platforms": [
+        "linux-musl"
+      ],
+      "architectures": [
+        "x86_64"
+      ],
+      "binaries": [
+        "./rzls"
+      ]
+    },
+    {
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (Linux musl ARM64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/0a24828206a6f3b4bc743d058ef88ce7/razorlanguageserver-linux-musl-arm64-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
+      "platforms": [
+        "linux-musl"
+      ],
+      "architectures": [
+        "arm64"
+      ],
+      "binaries": [
+        "./rzls"
+      ]
+    },
+    {
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (macOS / x64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/2afcafaf41082989efcc10405abb9314/razorlanguageserver-osx-x64-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
+      "platforms": [
+        "darwin"
+      ],
+      "architectures": [
+        "x86_64"
+      ],
+      "binaries": [
+        "./rzls"
+      ]
+    },
+    {
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (macOS ARM64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/8bf2ed2f00d481a5987e3eb5165afddd/razorlanguageserver-osx-arm64-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
+      "platforms": [
+        "darwin"
+      ],
+      "architectures": [
+        "arm64"
+      ],
+      "binaries": [
+        "./rzls"
+      ]
+    },
+    {
+      "id": "VSWebAssemblyBridge",
+      "description": "VSWebAssemblyBridge (Platform Agnostic)",
+      "url": "https://vsdebugger.blob.core.windows.net/vswebassemblybridge-9-0-705702/vswebassemblybridge.zip",
+      "installPath": ".vswebassemblybridge",
+      "platforms": [
+        "win32",
+        "linux",
+        "darwin"
+      ],
+      "architectures": [
+        "x86",
+        "x86_64",
+        "arm64"
+      ],
+      "integrity": "9FDBDC91E2D79028A8932C1A96D3ABCFC7F40472FBC8F226E3FB1F6A1B5C97E7"
+    }
     ],
     "engines": {
         "vscode": "^1.106.0"
