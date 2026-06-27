@@ -24,7 +24,7 @@ import { BackgroundWorkStatusBarObserver } from './observers/backgroundWorkStatu
 import { OmnisharpDebugModeLoggerObserver } from './observers/omnisharpDebugModeLoggerObserver';
 import { RazorLoggerObserver } from './observers/razorLoggerObserver';
 import { RazorOmnisharpDownloader } from '../razor/razorOmnisharpDownloader';
-import { omnisharpOptions, razorOptions } from '../shared/options';
+import { omnisharpOptions, razorOptions, commonOptions } from '../shared/options';
 import CompositeDisposable from '../compositeDisposable';
 import { OmniSharpMonoResolver } from './omniSharpMonoResolver';
 import { DotnetResolver } from './dotnetResolver';
@@ -147,7 +147,7 @@ export async function activateOmniSharpLanguageServer(
     const razorObserver = new RazorLoggerObserver(csharpChannel);
     eventStream.subscribe(razorObserver.post);
 
-    if (!razorOptions.razorDevMode) {
+    if (!razorOptions.razorDevMode && !commonOptions.razorlspPath) {
         // Download Razor O# server
         const razorOmnisharpDownloader = new RazorOmnisharpDownloader(
             networkSettingsProvider,
