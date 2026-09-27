@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import execa from 'execa';
 import { promises, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
@@ -77,7 +76,10 @@ export class BlazorDebugConfigurationProvider implements vscode.DebugConfigurati
     private static readonly trackedSessionIds = new Set<string>();
     private static readonly trackedSessionsById = new Map<string, vscode.DebugSession>();
 
-    constructor(private readonly logger: vscode.LogOutputChannel, private readonly vscodeType: typeof vscode) {}
+    constructor(
+        private readonly logger: vscode.LogOutputChannel,
+        private readonly vscodeType: typeof vscode
+    ) {}
 
     public static register(logger: vscode.LogOutputChannel, vscodeType: typeof vscode) {
         const provider = new BlazorDebugConfigurationProvider(logger, vscodeType);
@@ -358,8 +360,8 @@ export class BlazorDebugConfigurationProvider implements vscode.DebugConfigurati
             configBrowser === 'edge'
                 ? BlazorDebugConfigurationProvider.edgeBrowserType
                 : configBrowser === 'chrome'
-                ? BlazorDebugConfigurationProvider.chromeBrowserType
-                : await BlazorDebugConfigurationProvider.determineBrowserType();
+                  ? BlazorDebugConfigurationProvider.chromeBrowserType
+                  : await BlazorDebugConfigurationProvider.determineBrowserType();
         if (!browserType) {
             return debugConfigurations;
         }
@@ -810,7 +812,7 @@ export class BlazorDebugConfigurationProvider implements vscode.DebugConfigurati
     public static async determineBrowserType(): Promise<string | undefined> {
         // There was no browser specified by the user, so we will do some auto-detection to find a browser,
         // favoring Edge if multiple valid options are installed.
-        const edgeBrowserFinder = new EdgeBrowserFinder(process.env, promises, execa);
+        const edgeBrowserFinder = new EdgeBrowserFinder(process.env, promises);
         const edgeInstallations = await edgeBrowserFinder.findAll();
         if (edgeInstallations.length > 0) {
             showInformationMessage(
@@ -821,7 +823,7 @@ export class BlazorDebugConfigurationProvider implements vscode.DebugConfigurati
             return BlazorDebugConfigurationProvider.edgeBrowserType;
         }
 
-        const chromeBrowserFinder = new ChromeBrowserFinder(process.env, promises, execa);
+        const chromeBrowserFinder = new ChromeBrowserFinder(process.env, promises);
         const chromeInstallations = await chromeBrowserFinder.findAll();
         if (chromeInstallations.length > 0) {
             showInformationMessage(

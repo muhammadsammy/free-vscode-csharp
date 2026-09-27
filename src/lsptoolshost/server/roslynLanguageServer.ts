@@ -559,9 +559,8 @@ export class RoslynLanguageServer {
                                     .getConfiguration()
                                     .update('dotnet.defaultSolution', 'disable', false);
                             } else {
-                                const chosenSolution: vscode.Uri | undefined = await vscode.commands.executeCommand(
-                                    'dotnet.openSolution'
-                                );
+                                const chosenSolution: vscode.Uri | undefined =
+                                    await vscode.commands.executeCommand('dotnet.openSolution');
                                 if (chosen.action === 'openAndSetDefault' && chosenSolution) {
                                     const relativePath = vscode.workspace.asRelativePath(chosenSolution);
                                     await vscode.workspace
@@ -901,6 +900,16 @@ export class RoslynLanguageServer {
                 additionalExtensionPaths.push(path)
             );
         }
+
+        // Also include the C# Dev Kit source-based test discovery extension, if present. The component
+        // is built by C# Dev Kit (vs-green), published as a NuGet package, and restored into this
+        // extension at build time (see allNugetPackages in offlinePackagingTasks.ts), using the same
+        // mechanism as the Xaml tools and roslynDevKit components above. It is optional: builds
+        // that don't restore the package won't have the folder, in which case getComponentPaths returns
+        // an empty array and we skip it. The consumer of the discovery service is the C# Dev Kit server.
+        getComponentPaths('testDiscovery', languageServerOptions, channel).forEach((path) =>
+            additionalExtensionPaths.push(path)
+        );
 
         return args;
     }
