@@ -326,6 +326,7 @@ export class DebugAdapterExecutableFactory implements vscode.DebugAdapterDescrip
                 };
             }
 
+            // eslint-disable-next-line no-useless-assignment
             let command = '';
             let args = [];
             if (typeof pipeTransport === 'object') {

@@ -2,9 +2,9 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "target": "ES2022",
-    "module": "node16",
+    "module": "CommonJS",
     "outDir": "out",
-    "lib": ["ES2021"],
+    "lib": ["ES2021", "ES2022.Error"],
     "paths": {
       "vscode-languageclient": ["./node_modules/vscode-languageclient/lib/common/api"],
       "vscode-languageclient/callHierarchy": ["./node_modules/vscode-languageclient/lib/common/callHierarchy"],
@@ -29,7 +29,7 @@
       "vscode-jsonrpc/node": ["./node_modules/vscode-jsonrpc/lib/node/main"]
     },
     "sourceMap": true,
-    "moduleResolution": "node16",
+    "moduleResolution": "node",
     "moduleDetection": "force",
     "strict": true,
     "forceConsistentCasingInFileNames": true,

@@ -163,7 +163,7 @@ export async function installDependencies(clean: boolean = false): Promise<void>
         await acquireAndInstallAllNugetPackages(vsixPlatformInfo, packageJSON, true);
     } catch (err) {
         const message = (err instanceof Error ? err.stack : err) ?? '<unknown error>';
-        throw Error(`Failed to install packages for ${platform}. ${message}` + { cause: err });
+        throw Error(`Failed to install packages for ${platform}. ${message}`, { cause: err });
     }
 }
 
@@ -373,12 +373,9 @@ async function doPackageOffline(vsixPlatform: VSIXPlatformInfo | undefined, opti
         const message = (err instanceof Error ? err.stack : err) ?? '<unknown error>';
         // NOTE: Extra `\n---` at the end is because gulp will print this message following by the
         // stack trace of this line. So that seperates the two stack traces.
-        throw Error(
-            `Failed to create package ${vsixPlatform?.vsceTarget ?? 'undefined'}. ${message}\n---` +
-                {
-                    cause: err,
-                }
-        );
+        throw Error(`Failed to create package ${vsixPlatform?.vsceTarget ?? 'undefined'}. ${message}\n---`, {
+            cause: err,
+        });
     } finally {
         // Reset package version to the placeholder value.
         await nbgv.resetPackageVersionPlaceholder();
