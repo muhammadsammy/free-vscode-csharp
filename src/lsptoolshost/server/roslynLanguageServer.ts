@@ -171,7 +171,7 @@ export class RoslynLanguageServer {
     public async setLogLevelsForCapture(): Promise<() => Promise<void>> {
         if (this._languageClient.state !== State.Running) {
             // If the server isn't running, return a no-op restore function
-            return async () => { };
+            return async () => {};
         }
 
         // Set server log level to Trace
