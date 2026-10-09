@@ -45,8 +45,6 @@ import {
 import { DotnetWorkspaceConfigurationProvider } from '../shared/workspaceConfigurationProvider';
 import { getMonoVersion } from '../utils/getMonoVersion';
 import { safeLength, sum } from '../common';
-import { TelemetryObserver } from './observers/telemetryObserver';
-import { ITelemetryReporter } from '../shared/telemetryReporter';
 import { Observable } from 'rxjs';
 import { registerOmnisharpOptionChanges } from './omnisharpOptionChanges';
 import { CSharpLoggerObserver } from './observers/csharpLoggerObserver';
@@ -66,15 +64,12 @@ export async function activateOmniSharpLanguageServer(
     eventStream: EventStream,
     csharpChannel: vscode.OutputChannel,
     dotnetTestChannel: vscode.OutputChannel,
-    dotnetChannel: vscode.OutputChannel,
-    reporter: ITelemetryReporter
+    dotnetChannel: vscode.OutputChannel
 ): Promise<ActivationResult> {
     // Set command enablement to use O# commands.
     vscode.commands.executeCommand('setContext', 'dotnet.server.activationContext', 'OmniSharp');
 
-    const useModernNetOption = omnisharpOptions.useModernNet;
-    const telemetryObserver = new TelemetryObserver(platformInfo, () => reporter, useModernNetOption);
-    eventStream.subscribe(telemetryObserver.post);
+    // const useModernNetOption = omnisharpOptions.useModernNet;
 
     const csharpLoggerObserver = new CSharpLoggerObserver(csharpChannel);
     eventStream.subscribe(csharpLoggerObserver.post);
@@ -154,8 +149,7 @@ export async function activateOmniSharpLanguageServer(
             eventStream,
             context.extension.packageJSON,
             platformInfo,
-            context.extension.extensionPath,
-            reporter
+            context.extension.extensionPath
         );
 
         await razorOmnisharpDownloader.DownloadAndInstallRazorOmnisharp(
@@ -179,8 +173,7 @@ export async function activateOmniSharpLanguageServer(
         networkSettingsProvider,
         eventStream,
         context.extension.extensionPath,
-        omnisharpChannel,
-        reporter
+        omnisharpChannel
     );
 }
 
@@ -191,8 +184,7 @@ async function activate(
     provider: NetworkSettingsProvider,
     eventStream: EventStream,
     extensionPath: string,
-    outputChannel: vscode.OutputChannel,
-    reporter: ITelemetryReporter
+    outputChannel: vscode.OutputChannel
 ) {
     const disposables = new CompositeDisposable();
 
@@ -214,8 +206,7 @@ async function activate(
         omnisharpDotnetResolver,
         context,
         outputChannel,
-        languageMiddlewareFeature,
-        reporter
+        languageMiddlewareFeature
     );
     const advisor = new Advisor(server); // create before server is started
     const testManager = new TestManager(server, eventStream, languageMiddlewareFeature);

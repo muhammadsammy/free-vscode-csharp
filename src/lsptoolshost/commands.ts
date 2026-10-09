@@ -17,8 +17,6 @@ import {
     changeProjectContextFileExplorer,
     openAndChangeProjectContext,
 } from './projectContext/projectContextCommands';
-import TelemetryReporter from '@vscode/extension-telemetry';
-import { TelemetryEventNames } from '../shared/telemetryEventNames';
 import { registerCollectLogsCommand } from './logging/collectLogs';
 import { ObservableLogOutputChannel } from './logging/observableLogOutputChannel';
 
@@ -27,17 +25,9 @@ export function registerCommands(
     languageServer: RoslynLanguageServer,
     hostExecutableResolver: IHostExecutableResolver,
     outputChannel: ObservableLogOutputChannel,
-    csharpTraceChannel: ObservableLogOutputChannel,
-    reporter: TelemetryReporter
+    csharpTraceChannel: ObservableLogOutputChannel
 ) {
-    registerExtensionCommands(
-        context,
-        languageServer,
-        hostExecutableResolver,
-        outputChannel,
-        csharpTraceChannel,
-        reporter
-    );
+    registerExtensionCommands(context, languageServer, hostExecutableResolver, outputChannel, csharpTraceChannel);
     registerWorkspaceCommands(context, languageServer);
     registerServerCommands(context, languageServer, outputChannel);
 }
@@ -50,27 +40,23 @@ function registerExtensionCommands(
     languageServer: RoslynLanguageServer,
     hostExecutableResolver: IHostExecutableResolver,
     outputChannel: ObservableLogOutputChannel,
-    csharpTraceChannel: ObservableLogOutputChannel,
-    reporter: TelemetryReporter
+    csharpTraceChannel: ObservableLogOutputChannel
 ) {
     context.subscriptions.push(
         vscode.commands.registerCommand(
             changeProjectContextCommandName,
             async (document: vscode.TextDocument | undefined, options) => {
-                reporter.sendTelemetryEvent(TelemetryEventNames.ProjectContextChangeCommand);
                 await changeProjectContext(languageServer, document, options);
             }
         )
     );
     context.subscriptions.push(
         vscode.commands.registerCommand(changeProjectContextFileExplorer, async (uri) => {
-            reporter.sendTelemetryEvent(TelemetryEventNames.ProjectContextChangeFileExplorer);
             await openAndChangeProjectContext(languageServer, uri);
         })
     );
     context.subscriptions.push(
         vscode.commands.registerCommand(changeProjectContextEditor, async (uri) => {
-            reporter.sendTelemetryEvent(TelemetryEventNames.ProjectContextChangeEditor);
             await openAndChangeProjectContext(languageServer, uri);
         })
     );

@@ -9,7 +9,6 @@ import * as path from 'path';
 import { registerCommands } from './commands';
 import { registerDebugger } from './debugger/debugger';
 import { PlatformInformation } from '../shared/platform';
-import TelemetryReporter from '@vscode/extension-telemetry';
 import { getCSharpDevKit } from '../utils/getCSharpDevKit';
 import { DotnetRuntimeExtensionResolver } from './dotnetRuntime/dotnetRuntimeExtensionResolver';
 import { registerUnitTestingCommands } from './testing/unitTesting';
@@ -21,12 +20,10 @@ import { commonOptions, languageServerOptions } from '../shared/options';
 import { registerNestedCodeActionCommands } from './diagnostics/nestedCodeAction';
 import { registerRestoreCommands } from './projectRestore/restore';
 import { registerMiscellaneousFileNotifier } from './workspace/miscellaneousFileNotifier';
-import { TelemetryEventNames } from '../shared/telemetryEventNames';
 import { WorkspaceStatus } from './workspace/workspaceStatus';
 import { ProjectContextStatus } from './projectContext/projectContextStatus';
 import { RoslynLanguageServer } from './server/roslynLanguageServer';
 import { registerCopilotContextProviders } from './copilot/contextProviders';
-import { registerCopilotChatSurvey } from './copilot/copilotChatSurvey';
 import { registerRazorEndpoints } from './razor/razorEndpoints';
 import { ObservableLogOutputChannel } from './logging/observableLogOutputChannel';
 import { registerSourceGeneratorRefresh } from './generators/sourceGeneratorsRefresh';
@@ -45,7 +42,6 @@ export async function activateRoslynLanguageServer(
     platformInfo: PlatformInformation,
     optionObservable: Observable<void>,
     outputChannel: ObservableLogOutputChannel,
-    reporter: TelemetryReporter,
     languageServerEvents: RoslynLanguageServerEvents
 ): Promise<RoslynLanguageServer> {
     // Create a channel for outputting general logs from the language server.
@@ -54,8 +50,6 @@ export async function activateRoslynLanguageServer(
     // Create a separate channel for outputting trace logs - these are incredibly verbose and make other logs very difficult to see.
     const traceOutputChannel = vscode.window.createOutputChannel(vscode.l10n.t('C# LSP Trace Logs'), { log: true });
     _traceChannel = new ObservableLogOutputChannel(traceOutputChannel);
-
-    reporter.sendTelemetryEvent(TelemetryEventNames.ClientInitialize);
 
     const hostExecutableResolver = new DotnetRuntimeExtensionResolver(
         platformInfo,
@@ -78,10 +72,9 @@ export async function activateRoslynLanguageServer(
     registerLanguageStatusItems(context, languageServer, languageServerEvents);
     registerMiscellaneousFileNotifier(context, languageServer);
     registerCopilotContextProviders(context, languageServer, _channel);
-    registerCopilotChatSurvey(context, languageServer, languageServerEvents, reporter, _channel);
 
     // Register any commands that need to be handled by the extension.
-    registerCommands(context, languageServer, hostExecutableResolver, _channel, _traceChannel, reporter);
+    registerCommands(context, languageServer, hostExecutableResolver, _channel, _traceChannel);
     registerNestedCodeActionCommands(context, languageServer, _channel);
     registerCodeActionFixAllCommands(context, languageServer, _channel);
 

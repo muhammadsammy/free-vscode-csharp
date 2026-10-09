@@ -34,7 +34,6 @@ import TestManager from './features/dotnetTest';
 import { findLaunchTargets } from './launcher';
 import { ProjectConfigurationMessage } from '../shared/projectConfiguration';
 import { commonOptions, omnisharpOptions, razorOptions } from '../shared/options';
-import { ITelemetryReporter } from '../shared/telemetryReporter';
 
 enum ServerState {
     Starting,
@@ -118,16 +117,14 @@ export class OmniSharpServer {
         private dotnetResolver: IHostExecutableResolver,
         private context: ExtensionContext,
         private outputChannel: OutputChannel,
-        private languageMiddlewareFeature: LanguageMiddlewareFeature,
-        reporter: ITelemetryReporter
+        private languageMiddlewareFeature: LanguageMiddlewareFeature
     ) {
         const downloader = new OmnisharpDownloader(
             networkSettingsProvider,
             this.eventStream,
             this.packageJSON,
             platformInfo,
-            extensionPath,
-            reporter
+            extensionPath
         );
         this._omnisharpManager = new OmnisharpManager(downloader, platformInfo);
         this.updateProjectDebouncer.pipe(debounceTime(1500)).subscribe(async (_) => {

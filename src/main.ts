@@ -12,7 +12,6 @@ import { CsharpChannelObserver } from './shared/observers/csharpChannelObserver'
 import { CsharpLoggerObserver } from './shared/observers/csharpLoggerObserver';
 import { EventStream } from './eventStream';
 import { PlatformInformation } from './shared/platform';
-import TelemetryReporter from '@vscode/extension-telemetry';
 import { vscodeNetworkSettingsProvider } from './networkSettings';
 import createOptionStream from './shared/observables/createOptionStream';
 import { AbsolutePathPackage } from './packageManager/absolutePathPackage';
@@ -37,11 +36,6 @@ export async function activate(
     csharpChannel.trace('Activating C# Extension');
 
     util.setExtensionPath(context.extension.extensionPath);
-
-    const aiKey = context.extension.packageJSON.contributes.debuggers[0].aiKey;
-    const reporter = new TelemetryReporter(aiKey);
-    // ensure it gets properly disposed. Upon disposal the events will be flushed.
-    context.subscriptions.push(reporter);
 
     const eventStream = new EventStream();
     const csharpchannelObserver = new CsharpChannelObserver(csharpChannel);
@@ -86,13 +80,7 @@ export async function activate(
         // component actually needs to be downloaded, which normally never happens after install.
         const { downloadAndInstallPackages } = await import('./packageManager/downloadAndInstallPackages');
         const { isValidDownload } = await import('./packageManager/isValidDownload');
-        return downloadAndInstallPackages(
-            dependencies,
-            networkSettingsProvider,
-            eventStream,
-            isValidDownload,
-            reporter
-        );
+        return downloadAndInstallPackages(dependencies, networkSettingsProvider, eventStream, isValidDownload);
     };
 
     const runtimeDependenciesExist = await installRuntimeDependencies(
@@ -142,7 +130,6 @@ export async function activate(
                 optionStream,
                 eventStream,
                 csharpChannel,
-                reporter,
                 csharpDevkitExtension,
                 getCoreClrDebugPromise
             );
@@ -157,7 +144,6 @@ export async function activate(
                 networkSettingsProvider,
                 eventStream,
                 csharpChannel,
-                reporter,
                 getCoreClrDebugPromise
             );
         }

@@ -8,7 +8,6 @@ import { OmnisharpExtensionExports } from './csharpExtensionExports';
 import { PlatformInformation } from './shared/platform';
 import { Observable } from 'rxjs';
 import { NetworkSettingsProvider } from './networkSettings';
-import TelemetryReporter from '@vscode/extension-telemetry';
 import { activateOmniSharpLanguageServer } from './omnisharp/omnisharpLanguageServer';
 import { EventStream } from './eventStream';
 import { razorOptions } from './shared/options';
@@ -21,7 +20,6 @@ export function activateOmniSharp(
     networkSettingsProvider: NetworkSettingsProvider,
     eventStream: EventStream,
     csharpChannel: vscode.OutputChannel,
-    reporter: TelemetryReporter,
     getCoreClrDebugPromise: (languageServerStarted: Promise<any>) => Promise<void>
 ): OmnisharpExtensionExports {
     // activate language services
@@ -35,8 +33,7 @@ export function activateOmniSharp(
         eventStream,
         csharpChannel,
         dotnetTestChannel,
-        dotnetChannel,
-        reporter
+        dotnetChannel
     );
 
     let omnisharpRazorPromise: Promise<void> | undefined = undefined;
