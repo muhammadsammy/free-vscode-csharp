@@ -4,13 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { RoslynLanguageServer } from '../server/roslynLanguageServer';
-import {
-    ParameterStructures,
-    PartialResultParams,
-    ProtocolRequestType,
-    RequestParam,
-    RequestType,
-} from 'vscode-languageclient';
+import { ParameterStructures, PartialResultParams, ProtocolRequestType, RequestType } from 'vscode-languageclient';
+import { RequestParam } from 'vscode-languageclient/node_modules/vscode-jsonrpc/lib/common/api';
 
 function normalizeParameterStructures(parameterStructures: unknown): ParameterStructures {
     switch (parameterStructures) {

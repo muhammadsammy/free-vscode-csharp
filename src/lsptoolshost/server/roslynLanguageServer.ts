@@ -14,13 +14,13 @@ import {
     PartialResultParams,
     ProtocolRequestType,
     RequestHandler,
-    RequestParam,
     RequestType,
     RequestType0,
     ResponseError,
     State,
     Trace,
 } from 'vscode-languageclient';
+import { RequestParam } from 'vscode-languageclient/node_modules/vscode-jsonrpc/lib/common/api';
 import { Executable, TransportKind } from 'vscode-languageclient/node';
 import { PlatformInformation } from '../../shared/platform';
 import { readConfigurations } from '../options/configurationMiddleware';
@@ -171,7 +171,7 @@ export class RoslynLanguageServer {
     public async setLogLevelsForCapture(): Promise<() => Promise<void>> {
         if (this._languageClient.state !== State.Running) {
             // If the server isn't running, return a no-op restore function
-            return async () => {};
+            return async () => { };
         }
 
         // Set server log level to Trace

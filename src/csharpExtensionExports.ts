@@ -9,7 +9,8 @@ import { EventStream } from './eventStream';
 import TestManager from './omnisharp/features/dotnetTest';
 import { GlobalBrokeredServiceContainer } from '@microsoft/servicehub-framework';
 import { LanguageServerEvents } from './lsptoolshost/server/languageServerEvents';
-import { PartialResultParams, ProtocolRequestType, RequestParam, RequestType } from 'vscode-languageclient';
+import { PartialResultParams, ProtocolRequestType, RequestType } from 'vscode-languageclient';
+import { RequestParam } from 'vscode-languageclient/node_modules/vscode-jsonrpc/lib/common/api';
 
 export interface LimitedExtensionExports {
     isLimitedActivation: true;
