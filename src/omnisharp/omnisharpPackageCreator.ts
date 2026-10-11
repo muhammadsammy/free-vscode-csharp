@@ -5,8 +5,6 @@
 
 import { Package } from '../packageManager/package';
 
-export const modernNetVersion = '6.0';
-
 export function GetPackagesFromVersion(
     version: string,
     useFramework: boolean,
@@ -47,14 +45,12 @@ function GetPackage(
     installPath: string,
     installBinary: string
 ): Package {
-    const packageSuffix = useFramework ? '' : `-net${modernNetVersion}`;
-
     return {
         ...inputPackage,
         integrity: undefined,
         description: `${inputPackage.description}, Version = ${version}`,
-        url: `${serverUrl}/releases/${version}/omnisharp-${inputPackage.platformId}${packageSuffix}.zip`,
-        installPath: `${installPath}/${version}${packageSuffix}`,
-        installTestPath: `./${installPath}/${version}${packageSuffix}/${installBinary}`,
+        url: `${serverUrl}/releases/${version}/omnisharp-${inputPackage.platformId}.zip`,
+        installPath: `${installPath}/${version}`,
+        installTestPath: `./${installPath}/${version}/${installBinary}`,
     };
 }

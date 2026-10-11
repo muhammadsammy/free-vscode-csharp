@@ -27,7 +27,6 @@ import {
 } from '../../../src/shared/loggingEvents';
 import TestEventBus from './testAssets/testEventBus';
 import { testPackageJSON } from './testAssets/testAssets';
-import { modernNetVersion } from '../../../src/omnisharp/omnisharpPackageCreator';
 
 [true, false].forEach((useFramework) => {
     describe(`OmnisharpDownloader (useFramework: ${useFramework})`, () => {
@@ -42,7 +41,6 @@ import { modernNetVersion } from '../../../src/omnisharp/omnisharpPackageCreator
         let tmpDir: TmpAsset;
         let testZip: TestZip;
         let eventBus: TestEventBus;
-        const suffix = useFramework ? '' : `-net${modernNetVersion}`;
 
         beforeEach(async () => {
             eventStream = new EventStream();
@@ -61,7 +59,7 @@ import { modernNetVersion } from '../../../src/omnisharp/omnisharpPackageCreator
             await server.start();
             server.addRequestHandler(
                 'GET',
-                `/releases/${version}/omnisharp-win-x64${suffix}.zip`,
+                `/releases/${version}/omnisharp-win-x64.zip`,
                 200,
                 {
                     'content-type': 'application/zip',
@@ -85,7 +83,7 @@ import { modernNetVersion } from '../../../src/omnisharp/omnisharpPackageCreator
         test('Packages are downloaded and installed', async () => {
             await downloader.DownloadAndInstallOmnisharp(version, useFramework, server.baseUrl, installPath);
             for (const elem of testZip.files) {
-                const filePath = path.join(extensionPath, installPath, version + suffix, elem.path);
+                const filePath = path.join(extensionPath, installPath, version, elem.path);
                 expect(await util.fileExists(filePath)).toBe(true);
             }
         });
