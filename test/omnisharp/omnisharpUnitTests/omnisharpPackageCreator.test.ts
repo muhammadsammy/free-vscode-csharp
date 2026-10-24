@@ -4,11 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { describe, test, expect, beforeEach } from '@jest/globals';
-import {
-    SetBinaryAndGetPackage,
-    GetPackagesFromVersion,
-    modernNetVersion,
-} from '../../../src/omnisharp/omnisharpPackageCreator';
+import { SetBinaryAndGetPackage, GetPackagesFromVersion } from '../../../src/omnisharp/omnisharpPackageCreator';
 import { Package } from '../../../src/packageManager/package';
 import { testPackageJSON } from './testAssets/testAssets';
 import { isNotNull } from '../testUtil';
@@ -30,8 +26,6 @@ describe('GetOmnisharpPackage : Output package depends on the input package and 
     const useFrameworkOptions = [true, false];
 
     useFrameworkOptions.forEach((useFramework) => {
-        const pathSuffix = useFramework ? '' : `-net${modernNetVersion}`;
-
         test(`Architectures, binaries and platforms do not change ${useFramework ? 'on framework' : ''}`, () => {
             const testPackage = inputPackages.find(
                 (element) => element.platformId && element.platformId == 'os-architecture'
@@ -69,7 +63,7 @@ describe('GetOmnisharpPackage : Output package depends on the input package and 
                 '1.2.3',
                 'experimentPath'
             );
-            expect(resultPackage.installPath).toEqual(`experimentPath/1.2.3${pathSuffix}`);
+            expect(resultPackage.installPath).toEqual(`experimentPath/1.2.3`);
         });
 
         test(`Install test path is calculated using specified path, version and ends with OmniSharp.exe or OmniSharp.dll - Windows(x64) ${
@@ -84,7 +78,7 @@ describe('GetOmnisharpPackage : Output package depends on the input package and 
                 'experimentPath'
             );
             expect(resultPackage.installTestPath).toEqual(
-                `./experimentPath/1.2.3${pathSuffix}/OmniSharp.${useFramework ? 'exe' : 'dll'}`
+                `./experimentPath/1.2.3/OmniSharp.${useFramework ? 'exe' : 'dll'}`
             );
         });
 
@@ -100,7 +94,7 @@ describe('GetOmnisharpPackage : Output package depends on the input package and 
                 'experimentPath'
             );
             expect(resultPackage.installTestPath).toEqual(
-                `./experimentPath/1.2.3${pathSuffix}/${useFramework ? 'run' : 'OmniSharp.dll'}`
+                `./experimentPath/1.2.3/${useFramework ? 'run' : 'OmniSharp.dll'}`
             );
         });
 
@@ -118,7 +112,7 @@ describe('GetOmnisharpPackage : Output package depends on the input package and 
                 'experimentPath'
             );
             expect(resultPackage.installTestPath).toEqual(
-                `./experimentPath/1.2.3${pathSuffix}/${useFramework ? 'run' : 'OmniSharp.dll'}`
+                `./experimentPath/1.2.3/${useFramework ? 'run' : 'OmniSharp.dll'}`
             );
         });
 
@@ -136,7 +130,7 @@ describe('GetOmnisharpPackage : Output package depends on the input package and 
                 'experimentPath'
             );
             expect(resultPackage.installTestPath).toEqual(
-                `./experimentPath/1.2.3${pathSuffix}/${useFramework ? 'run' : 'OmniSharp.dll'}`
+                `./experimentPath/1.2.3/${useFramework ? 'run' : 'OmniSharp.dll'}`
             );
         });
     });
@@ -166,9 +160,7 @@ describe('GetOmnisharpPackage : Output package depends on the input package and 
             '1.1.1',
             installPath
         );
-        expect(resultPackage.url).toEqual(
-            `http://someurl/releases/1.1.1/omnisharp-os-architecture-net${modernNetVersion}.zip`
-        );
+        expect(resultPackage.url).toEqual(`http://someurl/releases/1.1.1/omnisharp-os-architecture.zip`);
     });
 });
 
@@ -227,13 +219,12 @@ describe('GetPackagesFromVersion : Gets the experimental omnisharp packages from
                 serverUrl,
                 'experimentPath'
             );
-            const suffix = useFramework ? '' : `-net${modernNetVersion}`;
             expect(outPackages).toHaveLength(2);
             expect(outPackages[0].installTestPath).toEqual(
-                `./experimentPath/1.1.1${suffix}/OmniSharp.${useFramework ? 'exe' : 'dll'}`
+                `./experimentPath/1.1.1/OmniSharp.${useFramework ? 'exe' : 'dll'}`
             );
             expect(outPackages[1].installTestPath).toEqual(
-                `./experimentPath/1.1.1${suffix}/${useFramework ? 'run' : 'OmniSharp.dll'}`
+                `./experimentPath/1.1.1/${useFramework ? 'run' : 'OmniSharp.dll'}`
             );
         });
 

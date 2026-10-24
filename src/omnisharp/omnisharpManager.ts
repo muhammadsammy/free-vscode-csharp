@@ -8,7 +8,6 @@ import * as semver from 'semver';
 import * as util from '../common';
 import { OmnisharpDownloader } from './omnisharpDownloader';
 import { PlatformInformation } from '../shared/platform';
-import { modernNetVersion } from './omnisharpPackageCreator';
 
 export class OmnisharpManager {
     private readonly latestVersionFileServerPath = 'releases/versioninfo.txt';
@@ -77,11 +76,7 @@ export class OmnisharpManager {
         useFramework: boolean,
         extensionPath: string
     ): string {
-        const basePath = path.resolve(
-            extensionPath,
-            this.installPath,
-            version + (useFramework ? '' : `-net${modernNetVersion}`)
-        );
+        const basePath = path.resolve(extensionPath, this.installPath, version);
         if (!useFramework) {
             return path.join(basePath, 'OmniSharp.dll');
         } else if (platformInfo.isWindows()) {
