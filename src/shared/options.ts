@@ -10,6 +10,7 @@ import * as path from 'path';
 export interface CommonOptions {
     readonly waitForDebugger: boolean;
     readonly serverPath: string;
+    readonly razorlspPath: string;
     readonly useOmnisharpServer: boolean;
     readonly excludePaths: string[];
 
@@ -101,7 +102,10 @@ class CommonOptionsImpl implements CommonOptions {
         return readOption<string>('dotnet.server.path', '', 'omnisharp.path', 'csharp.omnisharp');
     }
     public get useOmnisharpServer() {
-        return readOption<boolean>('dotnet.server.useOmnisharp', false);
+        return readOption<boolean>('dotnet.server.useOmnisharp', true);
+    }
+    public get razorlspPath() {
+        return readOption<string>('dotnet.razorlspPath', '');
     }
     public get excludePaths() {
         return getExcludedPaths();
@@ -491,6 +495,7 @@ export const CommonOptionsThatTriggerReload: ReadonlyArray<keyof CommonOptions> 
     'serverPath',
     'useOmnisharpServer',
     'disableAIFeatures',
+    'razorlspPath',
 ];
 
 export const OmnisharpOptionsThatTriggerReload: ReadonlyArray<keyof OmnisharpServerOptions> = [
