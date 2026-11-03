@@ -33,6 +33,7 @@ import { randomUUID } from 'crypto';
 import { IHostExecutableResolver } from '../../shared/constants/IHostExecutableResolver';
 import { RoslynLanguageClient } from './roslynLanguageClient';
 import { provideDiagnostics, provideWorkspaceDiagnostics } from '../diagnostics/diagnosticMiddleware';
+import { provideCodeActions } from '../codeActions/codeActionMiddleware';
 import { reportProjectConfigurationEvent } from '../../shared/projectConfiguration';
 import { getDotnetInfo } from '../../shared/utils/getDotnetInfo';
 import { DotnetInfo } from '../../shared/utils/dotnetInfo';
@@ -294,6 +295,7 @@ export class RoslynLanguageServer {
                 protocol2Code: UriConverter.deserialize,
             },
             middleware: {
+                provideCodeActions,
                 provideDiagnostics,
                 provideWorkspaceDiagnostics,
                 async sendRequest(type, param, token, next) {

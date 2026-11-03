@@ -83,6 +83,7 @@ export interface LanguageServerOptions {
     readonly suppressMiscellaneousFilesToasts: boolean;
     readonly useServerGC: boolean;
     readonly reportInformationAsHint: boolean;
+    readonly codeActionsExclude: string[];
     readonly environmentVariables: { [key: string]: string };
     readonly sourceGeneratorExecution: string;
     readonly toolingRuntimePath: string;
@@ -423,6 +424,9 @@ class LanguageServerOptionsImpl implements LanguageServerOptions {
     }
     public get reportInformationAsHint() {
         return readOption<boolean>('dotnet.diagnostics.reportInformationAsHint', true);
+    }
+    public get codeActionsExclude() {
+        return readOption<string[]>('dotnet.codeActions.exclude', []);
     }
     public get environmentVariables() {
         return readOption<{ [key: string]: string }>('dotnet.server.environmentVariables', {});

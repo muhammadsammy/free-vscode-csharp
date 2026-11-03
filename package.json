@@ -687,6 +687,15 @@
             "description": "%configuration.dotnet.backgroundAnalysis.compilerDiagnosticsScope%",
             "order": 30
           },
+          "dotnet.codeActions.exclude": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [],
+            "description": "%configuration.dotnet.codeActions.exclude%",
+            "order": 30
+          },
           "dotnet.diagnostics.reportInformationAsHint": {
             "type": "boolean",
             "default": true,
